@@ -3,7 +3,9 @@
   evillase@gmail.com
   Jimmy Jin
   mingze.jin01@gmail.com
-
+  Natheir Abu-Dahab
+  abudahab.na@gmail.com
+  
   ram with variable latency and debug port
 */
 
@@ -56,10 +58,6 @@ module ram (
     dbg_data_out_reg <= mem[dbg_addr];
   end
   assign dbg_data_out = dbg_data_out_reg;
-
-  initial begin
-    $readmemh("meminit.mem", mem);
-  end
 
 `else
   altsyncram altsyncram_component (

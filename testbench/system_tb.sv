@@ -1,7 +1,9 @@
 /*
   Eric Villasenor
   evillase@gmail.com
-
+  Natheir Abu-Dahab
+  abudahab.na@gmail.com
+  
   system test bench, for connected processor (datapath+cache)
   and memory (ram).
 
@@ -35,7 +37,35 @@ module system_tb;
   test                                PROG (CLK,nRST,syif,dbg_addr_tb,dbg_data_out_tb);
 
   // dut
-`ifndef MAPPED
+`ifdef VIVADO_MAPPED
+  system DUT (
+    .CLK(CLK),
+    .nRST(nRST),
+    .\syif\.halt (syif.halt),
+    .\syif\.addr (syif.addr),
+    .\syif\.store (syif.store),
+    .\syif\.REN (syif.REN),
+    .\syif\.WEN (syif.WEN),
+    .\syif\.tbCTRL (syif.tbCTRL),
+    .\syif\.load (syif.load),
+    .dbg_addr(dbg_addr_tb),
+    .dbg_data_out(dbg_data_out_tb)
+  );
+`elsif MAPPED
+   system DUT (
+    .CLK(CLK),
+    .nRST(nRST),
+    .\syif\.halt (syif.halt),
+    .\syif\.addr (syif.addr),
+    .\syif\.store (syif.store),
+    .\syif\.REN (syif.REN),
+    .\syif\.WEN (syif.WEN),
+    .\syif\.tbCTRL (syif.tbCTRL),
+    .\syif\.load (syif.load),
+    .dbg_addr(dbg_addr_tb),
+    .dbg_data_out(dbg_data_out_tb)
+  );
+`else
   system DUT (CLK,nRST,syif,dbg_addr_tb,dbg_data_out_tb);
   // CPU Tracker. Uncomment and change signal names to enable.
   /*
@@ -84,20 +114,6 @@ module system_tb;
     .data_mem_store(DUT.CPU.DP0.dpif.dmemstore)
   );
   */
-`else
-  system DUT (
-    .CLK(CLK),
-    .nRST(nRST),
-    .\syif\.halt (syif.halt),
-    .\syif\.addr (syif.addr),
-    .\syif\.store (syif.store),
-    .\syif\.REN (syif.REN),
-    .\syif\.WEN (syif.WEN),
-    .\syif\.tbCTRL (syif.tbCTRL),
-    .\syif\.load (syif.load),
-    .dbg_addr(dbg_addr_tb),
-    .dbg_data_out(dbg_data_out_tb)
-  );
 `endif
 
 endmodule
@@ -105,6 +121,47 @@ endmodule
 program test(input logic CLK, output logic nRST, system_if.tb syif, output logic [13:0] dbg_addr_tb, input logic [31:0] dbg_data_out_tb);
   // import word type
   import cpu_types_pkg::word_t;
+
+  localparam int DEPTH = 16384;
+  word_t img [0:DEPTH-1];
+
+  task automatic tb_write_word(int unsigned word_index, word_t data);
+    // RAM is word-addressed by ramaddr[15:2], so byte addr = word_index<<2
+    syif.addr  = (word_index << 2);
+    syif.store = data;
+    syif.WEN   = 1'b1;
+    syif.REN   = 1'b0;
+
+    // wait long enough for RAM latency
+    repeat (4) @(posedge CLK);
+
+    syif.WEN = 1'b0;
+    @(posedge CLK);
+  endtask
+  
+  task automatic load_image(string fname);
+    $display("Loading memory image: %s", fname);
+
+    // read file into TB array
+    $readmemh(fname, img);
+
+    // take control of RAM from CPU
+    syif.tbCTRL = 1;
+    syif.REN    = 0;
+    syif.WEN    = 0;
+
+    // write all words
+    for (int i = 0; i < DEPTH; i++) begin
+      tb_write_word(i, img[i]);
+    end
+
+    // release control back to CPU
+    syif.WEN    = 0;
+    syif.REN    = 0;
+    syif.tbCTRL = 0;
+
+    $display("Finished loading %s", fname);
+  endtask
 
   // number of cycles
   int unsigned cycles = 0;
@@ -117,6 +174,15 @@ program test(input logic CLK, output logic nRST, system_if.tb syif, output logic
     syif.store = 0;
     syif.WEN = 0;
     syif.REN = 0;
+
+    `ifdef VIVADO_MAPPED
+      load_image("meminit.mem");
+    `elsif MAPPED
+      load_image("meminit.mem");
+    `else
+      $readmemh("meminit.mem", system_tb.DUT.RAM.mem);
+    `endif
+
     @(posedge CLK);
     $display("Starting Processor.");
     nRST = 1;
