@@ -1,7 +1,9 @@
 /*
   Eric Villasenor
   evillase@gmail.com
-
+  Natheir Abu-Dahab
+  abudahab.na@gmail.com
+  
   system test bench, for connected processor (datapath+cache)
   and memory (ram).
 
@@ -22,6 +24,8 @@ module system_tb;
 
   // signals
   logic CLK = 1, nRST;
+  logic [31:0] dbg_data_out_tb;
+  logic [13:0] dbg_addr_tb;
 
   // clock
   always #(PERIOD/2) CLK++;
@@ -30,77 +34,134 @@ module system_tb;
   system_if syif();
 
   // test program
-  test                                PROG (CLK,nRST,syif);
+  test                                PROG (CLK,nRST,syif,dbg_addr_tb,dbg_data_out_tb);
 
   // dut
-`ifndef MAPPED
-  system                              DUT (CLK,nRST,syif);
+`ifdef VIVADO_MAPPED
+  system DUT (
+    .CLK(CLK),
+    .nRST(nRST),
+    .\syif\.halt (syif.halt),
+    .\syif\.addr (syif.addr),
+    .\syif\.store (syif.store),
+    .\syif\.REN (syif.REN),
+    .\syif\.WEN (syif.WEN),
+    .\syif\.tbCTRL (syif.tbCTRL),
+    .\syif\.load (syif.load),
+    .dbg_addr(dbg_addr_tb),
+    .dbg_data_out(dbg_data_out_tb)
+  );
+`elsif MAPPED
+   system DUT (
+    .CLK(CLK),
+    .nRST(nRST),
+    .\syif\.halt (syif.halt),
+    .\syif\.addr (syif.addr),
+    .\syif\.store (syif.store),
+    .\syif\.REN (syif.REN),
+    .\syif\.WEN (syif.WEN),
+    .\syif\.tbCTRL (syif.tbCTRL),
+    .\syif\.load (syif.load),
+    .dbg_addr(dbg_addr_tb),
+    .dbg_data_out(dbg_data_out_tb)
+  );
+`else
+  system DUT (CLK,nRST,syif,dbg_addr_tb,dbg_data_out_tb);
+  // CPU Tracker. Uncomment and change signal names to enable.
   /*
-  // NOTE: All of these signals MUST be passed all the way through
-  // to the write back stage and sampled in the WRITEBACK stage.
-  // This means more signals that would normally be necessary
-  // for correct execution must be passed along to help with debugging.
-  cpu_tracker_rv32 cpu_track0 (
-    // No need to change this
-    .CLK(DUT.CPU.DP.CLK),
-    // WB stall logic
-    .wb_stall(~DUT.CPU.DP.pc0_en),
-    //dhit signal
-    .dhit(DUT.CPU.DP.dpif.dhit),
-    //funct3 field
-    .funct_3(DUT.CPU.DP.funct3),
-    //funct7 field
-    .funct_7(DUT.CPU.DP.funct7),
-    //funct7 opcode
-    .opcode(DUT.CPU.DP.opcode),
-    // The 'rs1' portion of an instruction
-    .rs1(DUT.CPU.DP.rsel1),
-    // The 'rs2' portion of an instruction
-    .rs2(DUT.CPU.DP.rsel2),
-    //write select from reg. file
-    .wsel(DUT.CPU.DP.wsel),
-    //Instruction loaded from memory
-    .instr(DUT.CPU.DP.dpif.imemload),
-    // Connect the PC to this
-    .pc(DUT.CPU.DP.pc),
-    // Connect the next PC to this
-    .next_pc_val(DUT.CPU.DP.pc_selected),
-    // Connect branch addr
-    .branch_addr(DUT.CPU.DP.branch_imm),
-    // Connect jump addr
-    .jump_addr(DUT.CPU.DP.j_imm),
-    // This means it should already be shifted/extended/whatever
-    .imm(DUT.CPU.DP.imm_ext),
-    //Pre shifted bits from U-type inst.
-    .lui_pre_shift(DUT.CPU.DP.dpif.imemload[31:12]),
-    //Data to store to memory
-    .store_dat(DUT.CPU.DP.dpif.dmemstore),
-    //Data to write to reg. file
-    .reg_dat(DUT.CPU.DP.wdat),
-    //Data loaded from memory
-    .load_dat(DUT.CPU.DP.dpif.dmemload),
-    //Addr. to load/store from/to memory
-    .dat_addr(DUT.CPU.DP.dpif.dmemaddr)
+  cpu_tracker_singlecycle cpu_track0 (
+    // CLK in datapath
+    .CLK(DUT.CPU.DP0.CLK),
+    // signal which enables PC to go to next instruction
+    .enable_pc(DUT.CPU.DP0.dpif.ihit),
+    // dhit from dpif
+    .dhit(DUT.CPU.DP0.dpif.dhit),
+    // funct3 bits
+    .funct3(DUT.CPU.DP0.funct3),
+    // funct7 bits
+    .funct7(DUT.CPU.DP0.funct7),
+    // opcode bits
+    .opcode(opcode_t'(DUT.CPU.DP0.opcode)),
+    // rsel1 bits
+    .rsel1(DUT.CPU.DP0.rs1),
+    // rsel2 bits
+    .rsel2(DUT.CPU.DP0.rs2),
+    // wsel bits
+    .wsel(DUT.CPU.DP0.rd),
+    // 32-bit instruction
+    .instr(DUT.CPU.DP0.instr),
+    // PC for this instruction
+    .pc(DUT.CPU.DP0.PC),
+    // next PC to go to after this instruction
+    .next_pc(DUT.CPU.DP0.nPC),
+    // target PC for this instruction. Branches and JAL: PC + imm32; JALR: R[rs] + imm32
+    .branch_jump_target_pc(DUT.CPU.DP0.branch_PC),
+    // 32-bit decoded immediate
+    .imm32(DUT.CPU.DP0.imm),
+    // upper 20 bits as used by U-Type instructions (LUI, AUIPC). Can be the upper 20 bits of your decoded imm32 if your datapath does this already.
+    .utype_upper20(DUT.CPU.DP0.imm[31:12]),
+    // 32-bit wdat to register file
+    .reg_file_wdat(DUT.CPU.DP0.rfif.wdat),
+    // 1-bit dmemREN from dpif
+    .data_mem_read(DUT.CPU.DP0.dpif.dmemREN),
+    // 1-bit dmemWEN from dpif
+    .data_mem_write(DUT.CPU.DP0.dpif.dmemWEN),
+    // 32-bit dmemaddr from dpif
+    .data_mem_addr(DUT.CPU.DP0.dpif.dmemaddr),
+    // 32-bit dmemload from dpif
+    .data_mem_load(DUT.CPU.DP0.dpif.dmemload),
+    // 32-bit dmemstore from dpif
+    .data_mem_store(DUT.CPU.DP0.dpif.dmemstore)
   );
   */
-`else
-  system                              DUT (,,,,//for altera debug ports
-    CLK,
-    nRST,
-    syif.halt,
-    syif.load,
-    syif.addr,
-    syif.store,
-    syif.REN,
-    syif.WEN,
-    syif.tbCTRL
-  );
 `endif
+
 endmodule
 
-program test(input logic CLK, output logic nRST, system_if.tb syif);
+program test(input logic CLK, output logic nRST, system_if.tb syif, output logic [13:0] dbg_addr_tb, input logic [31:0] dbg_data_out_tb);
   // import word type
   import cpu_types_pkg::word_t;
+
+  localparam int DEPTH = 16384;
+  word_t img [0:DEPTH-1];
+
+  task automatic tb_write_word(int unsigned word_index, word_t data);
+    // RAM is word-addressed by ramaddr[15:2], so byte addr = word_index<<2
+    syif.addr  = (word_index << 2);
+    syif.store = data;
+    syif.WEN   = 1'b1;
+    syif.REN   = 1'b0;
+
+    // wait long enough for RAM latency
+    repeat (4) @(posedge CLK);
+
+    syif.WEN = 1'b0;
+    @(posedge CLK);
+  endtask
+  
+  task automatic load_image(string fname);
+    $display("Loading memory image: %s", fname);
+
+    // read file into TB array
+    $readmemh(fname, img);
+
+    // take control of RAM from CPU
+    syif.tbCTRL = 1;
+    syif.REN    = 0;
+    syif.WEN    = 0;
+
+    // write all words
+    for (int i = 0; i < DEPTH; i++) begin
+      tb_write_word(i, img[i]);
+    end
+
+    // release control back to CPU
+    syif.WEN    = 0;
+    syif.REN    = 0;
+    syif.tbCTRL = 0;
+
+    $display("Finished loading %s", fname);
+  endtask
 
   // number of cycles
   int unsigned cycles = 0;
@@ -113,6 +174,15 @@ program test(input logic CLK, output logic nRST, system_if.tb syif);
     syif.store = 0;
     syif.WEN = 0;
     syif.REN = 0;
+
+    `ifdef VIVADO_MAPPED
+      load_image("meminit.mem");
+    `elsif MAPPED
+      load_image("meminit.mem");
+    `else
+      $readmemh("meminit.mem", system_tb.DUT.RAM.mem);
+    `endif
+
     @(posedge CLK);
     $display("Starting Processor.");
     nRST = 1;
@@ -122,12 +192,42 @@ program test(input logic CLK, output logic nRST, system_if.tb syif);
       @(posedge CLK);
       cycles++;
     end
-    $display("Halted at %g time and ran for %d cycles.",$time, cycles);
+    $display("Halted at %g time and ran for %d cycles.",$time, (cycles-1)/2);
+
+    // Check if the halt signal is latched properly
+    repeat (20) @(posedge CLK);
+    if (!syif.halt) begin
+      $display("WARNING! Halt signal is not maintained after processor halts!");
+    end
+
     nRST = 0;
     dump_memory();
     $finish;
   end
 
+`ifdef USE_VIVADO
+  task automatic dump_memory();
+    string filename = "memcpu.mem";
+    int memfd = $fopen(filename,"w");
+    if (memfd)
+      $display("Starting memory dump via debug port.");
+    else
+      begin $display("Failed to open %s.",filename); $finish; end
+    for (int unsigned i = 0; i < 16384; i++) begin
+      dbg_addr_tb = i;
+      repeat (2) @(posedge CLK);
+      if ((dbg_data_out_tb | ~dbg_data_out_tb) !== 32'hffffffff) begin
+        $fdisplay(memfd, "%h", 32'h00000000);
+      end else begin
+        $fdisplay(memfd, "%h", dbg_data_out_tb);
+      end
+    end
+
+    $fclose(memfd);
+    dbg_addr_tb = 0;
+    $display("Finished memory dump via debug port.");
+  endtask
+`else
   task automatic dump_memory();
     string filename = "memcpu.hex";
     int memfd;
@@ -170,4 +270,5 @@ program test(input logic CLK, output logic nRST, system_if.tb syif);
       $display("Finished memory dump.");
     end
   endtask
+`endif
 endprogram
