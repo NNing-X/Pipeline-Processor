@@ -168,6 +168,8 @@ endtask
   @(negedge CLK);
   nRST = 1'b0;
   @(negedge CLK);
+  @(negedge CLK);
+  @(negedge CLK);
 
   $finish;
   end
