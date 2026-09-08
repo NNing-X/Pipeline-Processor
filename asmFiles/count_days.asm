@@ -1,8 +1,8 @@
 main: 
     li sp, 0xFFFC #initialize stack pointer
 
-    li $10, 22 #current day
-    li $11, 8 #current month
+    li $10, 3 #current day
+    li $11, 9 #current month
     li $12, 2026 #current year
 
     addi $13, $11, -1 #current month - 1

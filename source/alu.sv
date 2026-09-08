@@ -7,16 +7,17 @@ module alu(
     // input logic CLK, nRST,
     alu_if.alu aluif
 );
-    import cpu_types_pkg::ALU_SLL;
-    import cpu_types_pkg::ALU_SRL;
-    import cpu_types_pkg::ALU_SRA;
-    import cpu_types_pkg::ALU_ADD;
-    import cpu_types_pkg::ALU_SUB;
-    import cpu_types_pkg::ALU_AND;
-    import cpu_types_pkg::ALU_OR;
-    import cpu_types_pkg::ALU_XOR;
-    import cpu_types_pkg::ALU_SLT;
-    import cpu_types_pkg::ALU_SLTU;
+    // import cpu_types_pkg::ALU_SLL;
+    // import cpu_types_pkg::ALU_SRL;
+    // import cpu_types_pkg::ALU_SRA;
+    // import cpu_types_pkg::ALU_ADD;
+    // import cpu_types_pkg::ALU_SUB;
+    // import cpu_types_pkg::ALU_AND;
+    // import cpu_types_pkg::ALU_OR;
+    // import cpu_types_pkg::ALU_XOR;
+    // import cpu_types_pkg::ALU_SLT;
+    // import cpu_types_pkg::ALU_SLTU;
+    import cpu_types_pkg::*;
 
     always_comb begin
         aluif.outputPort = '0;

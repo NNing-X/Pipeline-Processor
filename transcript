@@ -23,7 +23,7 @@
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # vsim -coverage -suppress 12110 -do "view objects; do scripts/alu.do; run -all;" -onfinish stop "+define+USE_VIVADO" -L unisim -wlf alu_tb.wlf work.alu_tb glbl 
-# Start time: 19:45:58 on Sep 02,2026
+# Start time: 17:57:44 on Sep 03,2026
 # ** Note: (vsim-8009) Loading existing optimized design _opt
 # Loading sv_std.std
 # Loading work.cpu_types_pkg(fast)
@@ -127,7 +127,5 @@
 # SLTU passed
 # Break in Module test at testbench/alu_tb.sv line 199
 # 
-run -all
-# Simulation stop requested.
-# End time: 19:47:04 on Sep 02,2026, Elapsed time: 0:01:06
+# End time: 17:58:36 on Sep 03,2026, Elapsed time: 0:00:52
 # Errors: 0, Warnings: 0
