@@ -63,26 +63,77 @@ module datapath (
   end
 
   //halt logic
+  typedef enum logic {IDLE, HALT} state_t;
+  state_t state, next_state;
   logic next_halt, next_imemREN;
+  //next_state logic
   always_comb begin
-
-    next_halt = halt;
-    next_imemREN = imemREN;
-    if(is_halt) begin
-      next_halt = 1'b1;
-      next_imemREN = 1'b0;
-    end
+    next_state = state
+    // next_halt = halt;
+    // next_imemREN = imemREN;
+    // if(is_halt) begin
+    //   next_halt = 1'b1;
+    //   next_imemREN = 1'b0;
+    // end
+    casez(state)
+      IDLE: next_state = is_halt? HALT:IDLE;
+      HALT: next_state = HALT;
+    endcase
+  end
+  //output logic
+  always_comb begin
+    halt = 1'b0;
+    imemREN = 1'b1;
+    casez(state)
+      IDLE: begin
+        halt = 1'b0;
+        imemREN = 1'b1;
+      end
+      HALT: begin
+        halt = 1'b1;
+        imemREN = 1'b0
+      end
+    endcase
   end
   always_ff @(posedge CLK, negedge nRST)begin
-    halt <= next_halt;
-    imemREN <= next_imemREN;
-  end
-  //request unit
-  always_comb begin
-    if (dpif.ihit) begin
-      if (MemRead | MemWrite) begin
-
-      end
+    if (~nRST) begin
+      state <= IDLE;
+    end
+    else begin
+      state <= next_state;
     end
   end
+  //request unit
+  logic next_instr_done, instr_done;
+  always_comb begin
+    if (dpif.ihit) begin
+      if (MemRead) begin
+        next_dmemREN = 1'b1;
+      end
+      if (MemWrite) begin
+        next_dmemWEN = 1'b1;
+      end
+      else begin
+        next_instr_done = 1'b1;
+      end
+    end
+    if (dpif.dhit) begin
+      next_instr_done = 1'b1;
+      next_dmemREN = 1'b0;
+      next_dmemWEN = 1'b0;
+    end
+  end
+  always_ff @(posedge CLK, negedge nRST) begin
+    if (~nRST) begin
+      instr_done <= '0;
+      dmemREN <= '0;
+      dmemWEN <= '0;
+    end
+    else begin
+      instr_done <= next_instr_done;
+      dmemREN <= next_dmemREN;
+      dmemWEN <= next_dmemWEN;
+    end
+  end
+
 endmodule
