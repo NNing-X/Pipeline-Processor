@@ -35,12 +35,18 @@ module memory_control_tb;
   ccif.ramload = ramif.ramload;
   end
 
+  logic halt;
+  logic [13:0] dbg_addr;
+  logic [31:0] dbg_data_out;
+  ram RAM0 (CLK, nRST, halt, ramif, dbg_addr, dbg_data_out);
 
   // test program
   test PROG (
     .CLK,
     .nRST,
-    .cif0
+    .cif0,
+    .dbg_addr,
+    .dbg_data_out
   );
   // DUT
 `ifndef MAPPED
@@ -69,20 +75,88 @@ module memory_control_tb;
     .\CLK (CLK)
   );
 `endif
-
 endmodule
 
 program test (
   input logic CLK,
   caches_if.caches cif0,
-  output logic nRST
+  output logic nRST,
+  output logic [13:0] dbg_addr,
+  input logic [31:0] dbg_data_out
 );
-  parameter PERIOD = 10;
-  // import cpu_types_pkg::*;
-  logic halt;
-  logic [13:0] dbg_addr;
-  logic [31:0] dbg_data_out;
-  ram RAM0 (CLK, nRST, halt, ramif, dbg_addr, dbg_data_out);
+
+  `ifdef USE_VIVADO
+  task automatic dump_memory();
+    string filename = "memcpu.mem";
+    int memfd = $fopen(filename,"w");
+    if (memfd)
+      $display("Starting memory dump via debug port.");
+    else
+      begin $display("Failed to open %s.",filename); $finish; end
+    // for (int unsigned i = 0; i < 16384; i++) begin
+    for (int unsigned i = 0; i < 16; i++) begin
+      dbg_addr = i;
+      repeat (2) @(posedge CLK);
+      if ((dbg_data_out | ~dbg_data_out) !== 32'hffffffff) begin
+        $fdisplay(memfd, "%h", 32'h00000000);
+      end else begin
+        $fdisplay(memfd, "%h", dbg_data_out);
+      end
+    end
+
+    $fclose(memfd);
+    dbg_addr = 0;
+    $display("Finished memory dump via debug port.");
+  endtask
+`else
+  task automatic dump_memory();
+    string filename = "memcpu.mem";
+    int memfd;
+
+    // cif0.tbCTRL = 1;
+    cif0.daddr = 0;
+    cif0.dWEN = 0;
+    cif0.dREN = 0;
+
+    memfd = $fopen(filename,"w");
+    if (memfd)
+      $display("Starting memory dump.");
+    else
+      begin 
+        $display("Failed to open %s.",filename); $finish; 
+      end
+
+    // for (int unsigned i = 0; memfd && i < 16384; i++)
+    for (int unsigned i = 0; memfd && i < 16; i++)
+    begin
+      // int chksum = 0;
+      // bit [7:0][7:0] values;
+      // string ihex;
+
+      cif0.daddr = i << 2;
+      cif0.dREN = 1;
+      repeat (4) @(posedge CLK);
+      // if (cif0.dload === 0)
+      //   continue;
+      // values = {8'h04,16'(i),8'h00,cif0.dload};
+      // foreach (values[j])
+      //   chksum += values[j];
+      // chksum = 16'h100 - chksum;
+      // ihex = $sformatf(":04%h00%h%h",16'(i),cif0.dload,8'(chksum));
+      // $fdisplay(memfd,"%s",ihex.toupper());
+      $fdisplay(memfd,"%h",cif0.dload);
+    end //for
+    if (memfd)
+    begin
+      // syif.tbCTRL = 0;
+      cif0.dREN = 0;
+      // $fdisplay(memfd,":00000001FF");
+      $fclose(memfd);
+      $display("Finished memory dump.");
+    end
+  endtask
+`endif
+
 
     initial begin
       nRST = 1'b0;
@@ -92,35 +166,38 @@ program test (
       cif0.dstore = '0;
       cif0.iREN = '0;
       cif0.iaddr = '0;
-      halt = 1'b1;
-      dbg_addr = '0;
-      @(negedge CLK);
       @(negedge CLK);
       $readmemh("meminit.mem", RAM0.mem);
-      @(negedge CLK);
       @(negedge CLK);
       nRST = 1'b1;
       //LW 
       cif0.iREN = 1'b1;
-      cif0.iaddr = 32'h0012_3454;
+      cif0.iaddr = 32'h0000_0004;
       @(negedge CLK);
       @(negedge CLK);
-      cif0.daddr = 32'h0065_4324;
+      @(negedge CLK);
+      cif0.daddr = 32'h0000_0008;
       cif0.dREN = 1'b1;
+      @(negedge CLK);
       @(negedge CLK);
       @(negedge CLK);
       cif0.dREN = 1'b0;
 
       //SW
-      cif0.iaddr = 32'h1234_5670;
+      cif0.iaddr = 32'h0000_000C;
       @(negedge CLK);
       @(negedge CLK);
-      cif0.daddr = 32'h8765_4320;
+      @(negedge CLK);
+      cif0.daddr = 32'h0000_0010;
       cif0.dstore = 32'hFFFF_FFFF;
       cif0.dWEN = 1'b1;
       @(negedge CLK);
       @(negedge CLK);
       @(negedge CLK);
+
+      cif0.iREN = 1'b0;
+      @(negedge CLK);
+      dump_memory();
 
       $finish;
     end
