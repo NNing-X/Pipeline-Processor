@@ -22,6 +22,9 @@ module datapath (
   // pc init
   parameter PC_INIT = 0;
 
+  register_file reg0 (.CLK, .nRST, );
+  alu alu0 ()
+
   //decoder
   logic is_halt, beq, bne, blt, bge, Jal, Jalr, ALUSrc, MemRead, MemWrite, Regwrite, auipc, lui;
   logic [4:0] ALUOp;
