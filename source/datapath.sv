@@ -28,7 +28,12 @@ module datapath (
 
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
-
+  logic is_halt, beq, bne, blt, bge, Jal, Jalr, ALUSrc, MemRead, MemWrite, RegWrite, instr_done;
+  logic [2:0] MemtoReg;
+  aluop_t ALUOp;
+  control_unit CTRL0 (dpif.imemload, MemtoReg, ALUSrc, ALUOp, is_halt, MemRead, MemWrite, RegWrite, beq, bne, blt, bge, Jal, Jalr);
+  request_unit REQ0 (CLK, nRST, dpif.ihit, dpif.dhit, MemRead, MemWrite, RegWrite, dpif.dmemREN, dpif.dmemWEN, instr_done, rfif.WEN);
+  assign aluif.op = ALUOp;
   assign rfif.rsel1 = dpif.imemload[19:15];
   assign rfif.rsel2 = dpif.imemload[24:20];
   assign rfif.wsel = dpif.imemload[11:7];
@@ -37,6 +42,13 @@ module datapath (
   assign dpif.dmemstore = rfif.rdat2;
   assign dpif.dmemaddr = aluif.outputPort;
 
+  logic [2:0] funct3;
+  logic [6:0] funct7;
+  logic [6:0] opcode;
+  assign funct3 = dpif.imemload[14:12];
+  assign funct7 = dpif.imemload[31:25];
+  assign opcode = dpif.imemload[6:0];
+/*
   //decoder
   logic is_halt, beq, bne, blt, bge, Jal, Jalr, ALUSrc, MemRead, MemWrite, RegWrite, auipc, lui;
   // logic [4:0] ALUOp;
@@ -154,10 +166,11 @@ module datapath (
       end
     endcase
   end
-
-  //Imm Gen
+*/
+  //Imm Gen: Note! always sign-extend
   logic [31:0] imm;
   always_comb begin
+    imm = '0;
     casez(opcode)
       7'b0010011: begin //i type except load, eg.addi,xori,ori,andi,slli
         if (funct3 == 3'h0) imm = {{20{dpif.imemload[31]}},dpif.imemload[31:20]};
@@ -168,7 +181,7 @@ module datapath (
         if (funct3 == 3'h5 && funct7 == 7'h00) imm = {{27{dpif.imemload[31]}},dpif.imemload[24:20]};
         if (funct3 == 3'h5 && funct7 == 7'h20) imm = {{27{dpif.imemload[31]}},dpif.imemload[24:20]};
         if (funct3 == 3'h2) imm = {{20{dpif.imemload[31]}},dpif.imemload[31:20]};
-        if (funct3 == 3'h3) imm = {20'h0_0000,dpif.imemload[31:20]};
+        if (funct3 == 3'h3) imm = {{20{dpif.imemload[31]}},dpif.imemload[31:20]};
       end
       7'b0000011: begin //lw
         imm = {{20{dpif.imemload[31]}},dpif.imemload[31:20]};
@@ -177,13 +190,20 @@ module datapath (
         imm = {{20{dpif.imemload[31]}},dpif.imemload[31:25],dpif.imemload[11:7]};
       end
       7'b1100011: begin //branch type
-        if (funct3 == 3'h0 || funct3 == 3'h1 || funct3 == 3'h4 || funct3 == 3'h5) begin
+        // if (funct3 == 3'h0 || funct3 == 3'h1 || funct3 == 3'h4 || funct3 == 3'h5) begin
           imm = {{19{dpif.imemload[31]}},dpif.imemload[31],dpif.imemload[7],dpif.imemload[30:25],dpif.imemload[11:8],1'b0};
-        end
-        if (funct3 == 3'h6 || funct3 == 3'h7) begin
-          imm = {{19'h0_0000},dpif.imemload[31],dpif.imemload[7],dpif.imemload[30:25],dpif.imemload[11:8],1'b0};
-        end
+        // end
+        // if (funct3 == 3'h6 || funct3 == 3'h7) begin
+          // imm = {{19'h0_0000},dpif.imemload[31],dpif.imemload[7],dpif.imemload[30:25],dpif.imemload[11:8],1'b0};
+        // end
       end
+      7'b1101111: begin //jal
+        imm = {{11{dpif.imemload[31]}},dpif.imemload[31],dpif.imemload[19:12],dpif.imemload[20],dpif.imemload[30:21],1'b0};
+      end
+      7'b1100111: begin //jalr
+        imm = {{20{dpif.imemload[31]}},dpif.imemload[31:20]};
+      end
+      7'b0?10111: imm = {dpif.imemload[31:12], 12'h000};//lui and auipc
       default: imm = '0;
     endcase
   end
@@ -240,6 +260,7 @@ module datapath (
       state <= next_state;
     end
   end
+  /*
   //request unit
   logic next_instr_done, instr_done, next_dmemREN, next_dmemWEN, next_WEN;
   always_comb begin
@@ -276,12 +297,13 @@ module datapath (
       dpif.dmemWEN <= next_dmemWEN;
     end
   end
+  */
 
   //PCSrc control
   logic [1:0] PCSrc;
   always_comb begin
     PCSrc = 2'b00;
-    if (beq && aluif.zero || bne && ~aluif.zero || blt && aluif.outputPort || bge && ~aluif.outputPort || Jal) begin
+    if (beq && aluif.zero || bne && !aluif.zero || blt && aluif.outputPort || bge && !aluif.outputPort || Jal) begin
       PCSrc = 2'b01;
     end
     else if (Jalr) PCSrc = 2'b10;
@@ -308,13 +330,13 @@ module datapath (
   //pc register
   always_ff @(posedge CLK, negedge nRST)begin
     if (~nRST) begin
-      dpif.imemaddr = PC_INIT;
+      dpif.imemaddr <= PC_INIT;
     end
     else if (instr_done) begin
-      dpif.imemaddr = next_imemaddr;
+      dpif.imemaddr <= next_imemaddr;
     end
   end
-
+/*
   //wdat_control logic
   logic [2:0] MemtoReg;
   always_comb begin
@@ -324,8 +346,10 @@ module datapath (
     if (MemRead) MemtoReg = 3'b011;
     if (lui) MemtoReg = 3'b100;
   end
+*/
   //wdat mux
   always_comb begin
+    rfif.wdat = '0;
     casez(MemtoReg)
       3'b000: rfif.wdat = aluif.outputPort;
       3'b001: rfif.wdat = imm_pc;
