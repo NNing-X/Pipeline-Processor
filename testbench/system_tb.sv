@@ -18,6 +18,12 @@
 // mapped timing needs this. 1ns is too fast
 `timescale 1 ns / 1 ns
 
+// useful colors
+`define CLR_RESET  "\x1b[0m"
+`define CLR_RED    "\x1b[31m"
+`define CLR_GREEN  "\x1b[32m"
+`define CLR_YELLOW "\x1b[33m"
+
 module system_tb;
   // clock period
   parameter PERIOD = 20;
@@ -184,7 +190,16 @@ program test(input logic CLK, output logic nRST, system_if.tb syif, output logic
     `endif
 
     @(posedge CLK);
-    $display("Starting Processor.");
+		$display("");
+    `ifdef VIVADO_MAPPED
+        $display(`CLR_YELLOW, "Starting SYNTHESIZED Processor.", `CLR_RESET);
+    `elsif MAPPED
+        $display(`CLR_YELLOW, "Starting SYNTHESIZED Processor.", `CLR_RESET);
+    `else
+        $display("Starting RTL Processor.");
+    `endif
+		$display("");
+
     nRST = 1;
     // wait for halt
     while (!syif.halt)
