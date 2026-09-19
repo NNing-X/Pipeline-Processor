@@ -1,16 +1,10 @@
-/*
-  Eric Villasenor
-  evillase@gmail.com
-
-  register file interface
-*/
-`ifndef MEMWB_IF_VH
-`define MEMWB_IF_VH
+`ifndef MEM_WB_IF_VH
+`define MEM_WB_IF_VH
 
 // all types
 `include "cpu_types_pkg.vh"
 
-interface memwb_if;
+interface mem_wb_if;
   // import types
   import cpu_types_pkg::*;
 
@@ -19,4 +13,4 @@ interface memwb_if;
   regbits_t wsel;
 endinterface
 
-`endif //MEMWB_IF_VH
+`endif //MEM_WB_IF_VH
