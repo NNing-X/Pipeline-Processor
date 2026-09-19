@@ -34,7 +34,8 @@ module datapath (
   ex_mem_if exmemif();
   mem_wb_if memwbif();
 
-  logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite;
+  logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, RegWrite;
+  logic [2:0] MemtoReg;
   logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush;
   aluop_t ALUOp;
   register_file RF0 (CLK, nRST, rfif);
@@ -72,13 +73,13 @@ module datapath (
   end
 
   //if/id latch
-  always_ff @(posedge ifid_en, posedge ifid_flush)begin
-    if (ifid_flush)begin
+  always_ff @(posedge ifid_en, posedge ifid_flush, negedge nRST)begin
+    if (ifid_flush | !nRST)begin
       ifidif.pcPlus4 <= '0;
       ifidif.pc <= '0;
       ifidif.instruction <= '0;
     end
-    else begin
+    else if (ifid_en) begin
       ifidif.pcPlus4 <= pcPlus4;
       ifidif.pc <= dpif.imemaddr;
       ifidif.instruction <= dpif.imemload;
@@ -144,8 +145,8 @@ module datapath (
   end
 
   //id/ex latch
-  always_ff @(posedge idex_en, posedge idex_flush)begin
-    if (idex_flush)begin
+  always_ff @(posedge CLK, posedge idex_flush, negedge nRST)begin
+    if (idex_flush | !nRST)begin
       idexif.RegWrite <= '0;
       idexif.MemRead <= '0;
       idexif.jal <= '0;
@@ -167,7 +168,7 @@ module datapath (
       idexif.imm <= '0;
       idexif.wsel <= '0;
     end
-    else begin
+    else if (idex_en) begin
       idexif.RegWrite <= RegWrite;
       idexif.MemRead <= MemRead;
       idexif.jal <= jal;
@@ -205,8 +206,8 @@ module datapath (
   assign aluif.op = idexif.ALUOp;
 
   //ex/mem latch
-  always_ff @(posedge exmem_en, posedge exmem_flush)begin
-    if (exmem_flush)begin
+  always_ff @(posedge CLK, posedge exmem_flush, negedge nRST)begin
+    if (exmem_flush | !nRST)begin
       exmemif.RegWrite <= '0;
       exmemif.MemRead <= '0;
       exmemif.jal <= '0;
@@ -227,7 +228,7 @@ module datapath (
       exmemif.imm <= '0;
       exmemif.wsel <= '0;
     end
-    else begin
+    else if (exmem_en) begin
       exmemif.RegWrite <= idexif.RegWrite;
       exmemif.MemRead <= idexif.MemRead;
       exmemif.jal <= idexif.jal;

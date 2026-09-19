@@ -19,7 +19,7 @@
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # vsim -coverage -suppress 12110 -do "view objects; do scripts/system.do; run -all;" -onfinish stop "+define+USE_VIVADO" -L unisim -wlf system_tb.wlf work.system_tb glbl 
-# Start time: 18:14:32 on Sep 19,2026
+# Start time: 18:38:45 on Sep 19,2026
 # ** Note: (vsim-8009) Loading existing optimized design _opt
 # Loading sv_std.std
 # Loading work.system_tb(fast)
@@ -50,47 +50,12 @@
 # view objects
 # .main_pane.objects.interior.cs.body.tree
 #  do scripts/system.do
+# ** UI-Msg (Warning): (vish-4014) No objects found matching '/system_tb/DUT/CPU/DP/next_halt'.
+# Executing ONERROR command at macro ./scripts/system.do line 46
 #  run -all
 # 
 # Starting RTL Processor.
 # 
 # 
-# Causality operation skipped due to absence of debug database file
-add wave -position insertpoint sim:/system_tb/DUT/CPU/*
-add wave -position insertpoint sim:/system_tb/DUT/CPU/DP/*
-write format wave -window .main_pane.wave.interior.cs.body.pw.wf /home/ecegridfs/a/437mg143/ece437/processors/scripts/system.do
-restart
-# ** Note: (vsim-8009) Loading existing optimized design _opt
-# Loading sv_std.std
-# Loading work.system_tb(fast)
-# Loading work.cpu_types_pkg(fast)
-# Loading work.system_if(fast__1)
-# Loading work.test(fast)
-# Loading work.system(fast)
-# Loading work.cpu_ram_if(fast__1)
-# Loading work.pipeline(fast)
-# Loading work.datapath_cache_if(fast__1)
-# Loading work.caches_if(fast__1)
-# Loading work.cache_control_if(fast__1)
-# Loading work.datapath(fast)
-# Loading work.register_file_if(fast__1)
-# Loading work.alu_if(fast__1)
-# Loading work.if_id_if(fast__1)
-# Loading work.id_ex_if(fast__1)
-# Loading work.ex_mem_if(fast__1)
-# Loading work.mem_wb_if(fast__1)
-# Loading work.register_file(fast)
-# Loading work.alu(fast)
-# Loading work.pipeline_control_unit(fast)
-# Loading work.hazard_unit(fast)
-# Loading work.caches(fast)
-# Loading work.memory_control(fast)
-# Loading work.ram(fast)
-# Loading work.glbl(fast)
-# Break key hit
-run -all
-# 
-# Starting RTL Processor.
-# 
-# End time: 18:19:13 on Sep 19,2026, Elapsed time: 0:04:41
+# End time: 18:47:35 on Sep 19,2026, Elapsed time: 0:08:50
 # Errors: 0, Warnings: 0

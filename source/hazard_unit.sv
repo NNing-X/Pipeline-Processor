@@ -9,5 +9,5 @@ module hazard_unit (
     assign exmem_en = ihit;
     assign exmem_flush = 0;
     assign imemREN = halt ? 0:1;
-
+    
 endmodule
