@@ -1,3 +1,15 @@
+<<<<<<< HEAD
+/*
+  Eric Villasenor
+  evillase@gmail.com
+  Jimmy Jin
+  mingze.jin01@gmail.com
+
+  register file fpga wrapper
+*/
+
+=======
+>>>>>>> 0624e4c5ef24367940d84f137d70b432db0fd3d6
 // interface
 `include "alu_if.vh"
 
@@ -54,24 +66,27 @@ module alu_display_fpga (
   output logic [3:0] D0_AN, D1_AN
 );
   import cpu_types_pkg::*;
-
+  word_t display_digits;
+  logic [31:0] b_reg;
   // interface
-//   alu_if aluif();
-  // alu_fpga
-//   alu_fpga ALU_FPGA(CLK_100MHZ, out);
+  alu_if aluif();
+  alu arithmetic(aluif);
 
   logic [1:0] sel;
   logic [3:0] current_digit0, current_digit1;
   logic [6:0] ssdec0, ssdec1;
 
-  word_t display_digits;
   ssdec DEC0(current_digit0, ssdec0);
   ssdec DEC1(current_digit1, ssdec1);
-
-  assign display_digits = out;
-
-  // counter for time-muxing ssdec
-  logic CLK_DISP;
+  always_ff @(posedge CLK_100MHZ) begin
+    if (SW[15]) b_reg <= {{18{SW[14]}}, SW[13:0]};
+  end
+  assign aluif.portA = {{18{SW[14]}}, SW[13:0]};
+  assign aluif.portB = b_reg;
+  assign aluif.aluop = BTN[3:0];
+  assign display_digits = aluif.portOut;
+  assign LED[3:0] = aluif.aluop[3:0];
+logic CLK_DISP;
   clock_div #(.DIV(100000)) CLKDIV(CLK_100MHZ, CLK_DISP);
   always_ff @(posedge CLK_DISP) begin
     sel <= sel + 1;
@@ -90,8 +105,11 @@ module alu_display_fpga (
   // remaining assigns
   assign D0_SEG = ssdec0;
   assign D1_SEG = ssdec1;
-  
+
 endmodule
+
+
+  
 
 module ssdec (
   input logic [3:0] val,
