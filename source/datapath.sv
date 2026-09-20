@@ -34,14 +34,15 @@ module datapath (
   ex_mem_if exmemif();
   mem_wb_if memwbif();
 
-  logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, RegWrite;
+  logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, RegWrite;
+  logic [1:0] PCSrc;
   logic [2:0] MemtoReg;
   logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush;
   aluop_t ALUOp;
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
   pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, ALUOp);
-  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN);
+  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN);
   /*=============================
   instruction fetch stage
   =============================*/
@@ -73,7 +74,7 @@ module datapath (
   end
 
   //if/id latch
-  always_ff @(posedge ifid_en, posedge ifid_flush, negedge nRST)begin
+  always_ff @(posedge CLK, negedge nRST)begin
     if (ifid_flush | !nRST)begin
       ifidif.pcPlus4 <= '0;
       ifidif.pc <= '0;
@@ -145,7 +146,7 @@ module datapath (
   end
 
   //id/ex latch
-  always_ff @(posedge CLK, posedge idex_flush, negedge nRST)begin
+  always_ff @(posedge CLK, negedge nRST)begin
     if (idex_flush | !nRST)begin
       idexif.RegWrite <= '0;
       idexif.MemRead <= '0;
@@ -206,7 +207,7 @@ module datapath (
   assign aluif.op = idexif.ALUOp;
 
   //ex/mem latch
-  always_ff @(posedge CLK, posedge exmem_flush, negedge nRST)begin
+  always_ff @(posedge CLK, negedge nRST)begin
     if (exmem_flush | !nRST)begin
       exmemif.RegWrite <= '0;
       exmemif.MemRead <= '0;
@@ -272,6 +273,7 @@ module datapath (
       memwbif.aluOut <= '0;
       memwbif.imm <= '0;
       memwbif.wsel <= '0;
+      memwbif.dmemload <= '0;
     end
     else begin
       memwbif.RegWrite <= exmemif.RegWrite;
@@ -286,6 +288,7 @@ module datapath (
       memwbif.aluOut <= exmemif.aluOut;
       memwbif.imm <= exmemif.imm;
       memwbif.wsel <= exmemif.wsel;
+      memwbif.dmemload <= dpif.dmemload;
     end
   end
 
@@ -298,7 +301,7 @@ module datapath (
       3'b000: wdat = memwbif.aluOut;
       3'b001: wdat = memwbif.imm_pc;
       3'b010: wdat = memwbif.pcPlus4;
-      3'b011: wdat = dpif.dmemload;
+      3'b011: wdat = memwbif.dmemload;
       3'b100: wdat = memwbif.imm;
     endcase
   end

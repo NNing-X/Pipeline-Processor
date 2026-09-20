@@ -4,7 +4,8 @@ module pipeline_control_unit(
   if_id_if ifidif,
   ex_mem_if exmemif,
   mem_wb_if memwbif,
-  output logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, 
+  output logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc,
+  output logic [1:0] PCSrc, 
   output logic [2:0] MemtoReg, 
   output logic RegWrite,
   output cpu_types_pkg::aluop_t ALUOp

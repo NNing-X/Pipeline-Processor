@@ -19,7 +19,7 @@
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # vsim -coverage -suppress 12110 -do "view objects; do scripts/system.do; run -all;" -onfinish stop "+define+USE_VIVADO" -L unisim -wlf system_tb.wlf work.system_tb glbl 
-# Start time: 18:38:45 on Sep 19,2026
+# Start time: 23:40:38 on Sep 19,2026
 # ** Note: (vsim-8009) Loading existing optimized design _opt
 # Loading sv_std.std
 # Loading work.system_tb(fast)
@@ -50,12 +50,15 @@
 # view objects
 # .main_pane.objects.interior.cs.body.tree
 #  do scripts/system.do
-# ** UI-Msg (Warning): (vish-4014) No objects found matching '/system_tb/DUT/CPU/DP/next_halt'.
-# Executing ONERROR command at macro ./scripts/system.do line 46
 #  run -all
 # 
 # Starting RTL Processor.
 # 
+# Halted at 1280 time and ran for         31 cycles.
+# Starting memory dump via debug port.
+# Finished memory dump via debug port.
+# Break in Module test at testbench/system_tb.sv line 220
 # 
-# End time: 18:47:35 on Sep 19,2026, Elapsed time: 0:08:50
+# Causality operation skipped due to absence of debug database file
+# End time: 23:49:02 on Sep 19,2026, Elapsed time: 0:08:24
 # Errors: 0, Warnings: 0
