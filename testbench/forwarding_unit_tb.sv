@@ -17,38 +17,16 @@ module forwarding_unit_tb;
 //   int v1 = 1;
 //   int v2 = 4721;
 //   int v3 = 25119;
+  forwarding_unit DUT (.*);
 
-  // clock
-//   always #(PERIOD/2) CLK++;
 
-  // interface
-   aluif ();
-  // test program
 
-  // DUT
-`ifndef MAPPED
-  alu DUT(aluif);
-`else
-  alu DUT(
-    .\aluif\.zero (aluif.zero),
-    .\aluif\.overflow (aluif.overflow),
-    .\aluif\.negative (aluif.negative),
-    .\aluif\.op (aluif.op),
-    .\aluif\.portA (aluif.portA),
-    .\aluif\.portB (aluif.portB),
-    .\aluif\.outputPort (aluif.outputPort)
-    // .\nRST (nRST),
-    // .\CLK (CLK)
-  );
-`endif
-
-endmodule
 
 always_comb begin
 
     string testname;
     int testNum;
-    initial begin
+
     idexif.rsel1 = '0;
     idexif.rsel2 = '0;
     exmemif.wsel = '0;
@@ -107,4 +85,5 @@ always_comb begin
      
         $finish;
     end
-end
+
+endmodule
