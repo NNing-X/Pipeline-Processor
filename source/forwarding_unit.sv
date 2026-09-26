@@ -1,5 +1,5 @@
 module forwarding_unit (
-    id_ex_if ifexif,
+    id_ex_if idexif,
     ex_mem_if exmemif, 
     mem_wb_if memwbif,
     output logic [1:0] ForwardA, ForwardB
