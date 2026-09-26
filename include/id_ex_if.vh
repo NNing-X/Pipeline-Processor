@@ -8,7 +8,7 @@ interface id_ex_if;
   import cpu_types_pkg::*;
 
   word_t instruction, pcPlus4, pc, imm, rdat1, rdat2;
-  regbits_t wsel;
+  regbits_t wsel, rsel1, rsel2;
   aluop_t ALUOp;
   logic ALUSrc, RegWrite, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge;
 
