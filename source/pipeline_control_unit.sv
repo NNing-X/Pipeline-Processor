@@ -7,7 +7,7 @@ module pipeline_control_unit(
   output logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc,
   output logic [1:0] PCSrc, 
   output logic [2:0] MemtoReg, 
-  output logic RegWrite, taken
+  output logic RegWrite, taken,
   output cpu_types_pkg::aluop_t ALUOp
 );
   import cpu_types_pkg::*;
