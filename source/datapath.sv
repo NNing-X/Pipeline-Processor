@@ -39,9 +39,10 @@ module datapath (
   logic [2:0] MemtoReg;
   logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush;
   aluop_t ALUOp;
+  logic taken;
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
-  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, ALUOp);
+  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp);
   hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN);
   /*=============================
   instruction fetch stage
@@ -274,6 +275,7 @@ module datapath (
       memwbif.imm <= '0;
       memwbif.wsel <= '0;
       memwbif.dmemload <= '0;
+      memwbif.taken <= '0;
     end
     else begin
       memwbif.RegWrite <= exmemif.RegWrite;
@@ -289,6 +291,7 @@ module datapath (
       memwbif.imm <= exmemif.imm;
       memwbif.wsel <= exmemif.wsel;
       memwbif.dmemload <= dpif.dmemload;
+      memwbif.taken <= taken;
     end
   end
 

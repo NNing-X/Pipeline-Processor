@@ -7,7 +7,7 @@ module pipeline_control_unit(
   output logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc,
   output logic [1:0] PCSrc, 
   output logic [2:0] MemtoReg, 
-  output logic RegWrite,
+  output logic RegWrite, taken
   output cpu_types_pkg::aluop_t ALUOp
 );
   import cpu_types_pkg::*;
@@ -150,8 +150,12 @@ module pipeline_control_unit(
     PCSrc = 2'b00;
     if (exmemif.beq && exmemif.zero || exmemif.bne && !exmemif.zero || exmemif.blt && exmemif.aluOut || exmemif.bge && !exmemif.aluOut || exmemif.jal) begin
       PCSrc = 2'b01;
+      taken = 1;
     end
-    else if (exmemif.jalr) PCSrc = 2'b10;
+    else if (exmemif.jalr) begin 
+      PCSrc = 2'b10;
+      taken = 1;
+    end
   end
 
   //wdat control logic

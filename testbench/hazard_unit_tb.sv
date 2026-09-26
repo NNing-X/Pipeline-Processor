@@ -4,14 +4,17 @@
 // mapped timing needs this. 1ns is too fast
 `timescale 1 ns / 1 ns
 
-module forwarding_unit_tb;
+module hazard_unit_tb;
 
   parameter PERIOD = 10;
-  logic ihit, dhit, halt, MemWrite, MemRead,
-  logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, imemREN
-  if_id_if ifidif, id_ex_if idexif, ex_mem_if exmemif, mem_wb_if memwbif,
-  datapath_cache_if dpif,
-  logic nop
+  logic ihit, dhit, halt, MemWrite, MemRead;
+  logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, imemREN;
+  if_id_if ifidif();
+  id_ex_if idexif();
+  ex_mem_if exmemif();
+  mem_wb_if memwbif();
+  datapath_cache_if dpif();
+  logic nop;
 //   logic CLK = 0, nRST;
 
   // test vars
@@ -23,77 +26,52 @@ module forwarding_unit_tb;
 
     string testname;
     int testNum;
+    logic data_wait;
+    data_wait = 0;
+    ihit = '1;
+    dhit = '0;
+    halt = '0;
+    MemWrite = '0;
+    MemRead = '0;
+    idexif.MemRead = 1'b0;
+    idexif.wsel = 5'd0;
+    memwbif.taken = '0;
+    ifidif.instruction[19:15] = 5'd0;
 
-    idexif.rsel1 = '0;
-    idexif.rsel2 = '0;
-    exmemif.wsel = '0;
-    memwbif.wsel = '0;
-    exmemif.RegWrite = '0;
-    memwbif.RegWrite = '0;
     #(5ns);
-    testname = "Same register but regwrite not active EX/MEM";
+    testname = "load use(rs1) happened";
     testNum = 0;
-    idexif.rsel1 = 5'b00001;
-    exmemif.wsel = 5'b00001;
+    idexif.MemRead = 1'b1;
+    idexif.wsel = 5'd7;
+    ifidif.instruction[19:15] = 5'd7;
     #(5ns);
-    assert (ForwardA == '0 && ForwardB == '0) else $display("Test %d failed: $s", testNum, testname);        
-    testname = "Same register but regwrite not active MEM/WB";
-    exmemif.wsel = '0;
-    memwbif.wsel = 5'b00001;
+    assert (ifid_en == '0 && idex_en == '0 && nop == 1'b1) else $display("Test %d failed: $s", testNum, testname);        
+    testname = "load use(rs1) happened";
+    idexif.MemRead = 1'b1;
+    idexif.wsel = 5'd7;
+    ifidif.instruction[24:20] = 5'd7;
     testNum = 1;
     #(5ns);
-    assert (ForwardA == '0 && ForwardB == '0) else $display("Test %d failed: $s", testNum, testname); 
-    testname = "Same register rsel1 and regwrite active EX/MEM";
-    exmemif.wsel = 5'b00001;
-    memwbif.wsel = '0;
-    exmemif.RegWrite = 1;
+    assert (ifid_en == '0 && idex_en == '0 && nop == 1'b1) else $display("Test %d failed: $s", testNum, testname); 
+    testname = "Nothing happened";
+    idexif.MemRead = 1'b0;
+    idexif.wsel = 5'd7;
+    ifidif.instruction[24:20] = 5'd7;
     testNum = 2;
     #(5ns);
-    assert (ForwardA == 2'b1 && ForwardB == '0) else $display("Test %d failed: $s", testNum, testname);
-    testname = "Same register rsel2 and regwrite active EX/MEM";
-    idexif.rsel1 = '0;
-    idexif.rsel2 = 5'b00001;
-    exmemif.wsel = 5'b00001;
-    memwbif.wsel = '0;
-    exmemif.RegWrite = 1;
+    assert (ifid_en == '1 && idex_en == '1 && nop == 1'b0) else $display("Test %d failed: $s", testNum, testname); 
+    testname = "branch taken";
+    memwbif.taken = '1;
     testNum = 3;
     #(5ns);
-    assert (ForwardA == '0 && ForwardB == 2'b1) else $display("Test %d failed: $s", testNum, testname);
-    testname = "Same register rsel2 and regwrite active EX/MEM";
-    exmemif.wsel = 5'b00001;
-    memwbif.wsel = '0;
-    exmemif.RegWrite = 1;
+    assert (ifid_flush == '1 && idex_flush == '1 && exmem_flush == '1) else $display("Test %d failed: $s", testNum, testname); 
+
+    testname = "branch not taken";
+    memwbif.taken = '0;
     testNum = 4;
     #(5ns);
-    assert (ForwardA == 2'b0 && ForwardB == 2'b1) else $display("Test %d failed: $s", testNum, testname);
-    testname = "Same register rsel2 and regwrite active EX/MEM";
-    idexif.rsel1 = '0;
-    idexif.rsel2 = 5'b00001;
-    exmemif.wsel = 5'b00001;
-    memwbif.wsel = '0;
-    exmemif.RegWrite = 1;
-    testNum = 5;
-    #(5ns);
-    assert (ForwardA == '0 && ForwardB == 2'b1) else $display("Test %d failed: $s", testNum, testname);
-    testname = "Same register rsel2 and regwrite active MEM/WB";
-    exmemif.wsel = '0;
-    memwbif.wsel = 5'b00001;
-    exmemif.RegWrite = 0;
-    memwbif.RegWrite = 1;
-    testNum = 6;
-    #(5ns);
-    assert (ForwardA == 2'b00 && ForwardB == 2'b10) else $display("Test %d failed: $s", testNum, testname);
-    testname = "Same register rsel2 and regwrite active MEM/WB";
-    idexif.rsel1 = '0;
-    idexif.rsel2 = 5'b00001;
-    exmemif.wsel = '0;
-    memwbif.wsel = 5'b00001;
-    exmemif.RegWrite = 0;
-    memwbif.RegWrite = 1;
-    testNum = 7;
-    #(5ns);
-    assert (ForwardA == '0 && ForwardB == 2'b10) else $display("Test %d failed: $s", testNum, testname); 
-     
+    assert (ifid_flush == '0 && idex_flush == '0 && exmem_flush == '0) else $display("Test %d failed: $s", testNum, testname); 
+
         $finish;
     end
 
