@@ -7,19 +7,18 @@
 module forwarding_unit_tb;
 
   parameter PERIOD = 10;
-     id_ex_if idexif();
-     ex_mem_if exmemif();
-     mem_wb_if memwbif();
-     logic [1:0] ForwardA, ForwardB;
+  logic ihit, dhit, halt, MemWrite, MemRead,
+  logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, imemREN
+  if_id_if ifidif, id_ex_if idexif, ex_mem_if exmemif, mem_wb_if memwbif,
+  datapath_cache_if dpif,
+  logic nop
 //   logic CLK = 0, nRST;
 
   // test vars
 //   int v1 = 1;
 //   int v2 = 4721;
 //   int v3 = 25119;
-  forwarding_unit DUT (.*);
-
-
+  hazard_unit DUT (.*);
     initial begin
 
     string testname;
