@@ -23,7 +23,7 @@ module forwarding_unit_tb;
 
     string testname;
     int testNum;
-
+    
     idexif.rsel1 = '0;
     idexif.rsel2 = '0;
     exmemif.wsel = '0;
