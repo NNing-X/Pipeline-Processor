@@ -1,4 +1,41 @@
-processing file asmFiles/jal.asm (1 of 2)
-diff: memcpu.hex: No such file or directory
-processing file asmFiles/jalr.asm (2 of 2)
-diff: memcpu.hex: No such file or directory
+processing file asmFiles/aluop_and_alubranch.asm (1 of 1)
+processing file asmFiles/beq_notTaken.asm (1 of 1)
+--- memsim.hex	2026-09-26 17:26:18.669300971 -0400
++++ memcpu.hex	2026-09-26 17:26:18.665301011 -0400
+@@ -1,4 +1,3 @@
+-:0400000000000001FB
+ :0400010000100213D6
+ :040002000000029365
+ :040003000050202366
+processing file asmFiles/beq_notTaken.asm (1 of 1)
+--- memsim.hex	2026-09-26 17:36:25.577101367 -0400
++++ memcpu.hex	2026-09-26 17:36:25.573101408 -0400
+@@ -1,4 +1,3 @@
+-:0400000000000001FB
+ :0400010000100213D6
+ :040002000000029365
+ :040003000050202366
+processing file asmFiles/beq_notTaken.asm (1 of 1)
+--- memsim.hex	2026-09-26 17:45:54.187291538 -0400
++++ memcpu.hex	2026-09-26 17:45:54.184291569 -0400
+@@ -1,4 +1,3 @@
+-:0400000000000001FB
+ :0400010000100213D6
+ :040002000000029365
+ :040003000050202366
+processing file asmFiles/beq_notTaken.asm (1 of 1)
+--- memsim.hex	2026-09-26 17:47:40.889201437 -0400
++++ memcpu.hex	2026-09-26 17:47:40.885201478 -0400
+@@ -1,4 +1,3 @@
+-:0400000000000001FB
+ :0400010000100213D6
+ :040002000000029365
+ :040003000050202366
+processing file asmFiles/beq_notTaken.asm (1 of 1)
+--- memsim.hex	2026-09-26 17:49:07.081320866 -0400
++++ memcpu.hex	2026-09-26 17:49:07.076320917 -0400
+@@ -1,4 +1,3 @@
+-:0400000000000001FB
+ :0400010000100213D6
+ :040002000000029365
+ :040003000050202366
