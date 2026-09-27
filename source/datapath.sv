@@ -39,22 +39,14 @@ module datapath (
   logic [2:0] MemtoReg;
   logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush;
   aluop_t ALUOp;
-<<<<<<< HEAD
-  logic taken;
+  logic taken, nop;
+  logic [1:0] ForwardA, ForwardB;
   word_t forward_data;
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
   pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp, ForwardSel);
-  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN);
-=======
-  logic taken, nop;
-  logic [1:0] ForwardA, ForwardB;
-  register_file RF0 (CLK, nRST, rfif);
-  alu ALU0 (aluif);
-  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp);
   hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop);
   forwarding_unit FORWARD0 (idexif, exmemif, memwbif, ForwardA, ForwardB);
->>>>>>> a37032feb2ca042a9f990d0d4da762a4e4eaf17e
   /*=============================
   instruction fetch stage
   =============================*/
@@ -218,13 +210,13 @@ module datapath (
   always_comb begin
     casez(ForwardA) 
     2'b00: aluif.portA = idexif.rdat1;
-    2'b01: aluif.portA = exmemif.aluOut;
-    2'b10: aluif.portA = memwbif.aluOut;
+    2'b01: aluif.portA = forward_data;
+    2'b10: aluif.portA = wdat;
     endcase
     casez(ForwardB) 
     2'b00: portB_temp = idexif.rdat2;
-    2'b01: portB_temp = exmemif.aluOut;
-    2'b10: portB_temp = memwbif.aluOut;
+    2'b01: portB_temp = forward_data;
+    2'b10: portB_temp = wdat;
     endcase
   end
   assign aluif.portB = idexif.ALUSrc ? idexif.imm : portB_temp;
