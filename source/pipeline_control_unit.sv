@@ -8,7 +8,8 @@ module pipeline_control_unit(
   output logic [1:0] PCSrc, 
   output logic [2:0] MemtoReg, 
   output logic RegWrite, taken
-  output cpu_types_pkg::aluop_t ALUOp
+  output cpu_types_pkg::aluop_t ALUOp,
+  output logic [1:0] ForwardSel
 );
   import cpu_types_pkg::*;
 
@@ -156,6 +157,14 @@ module pipeline_control_unit(
       PCSrc = 2'b10;
       taken = 1;
     end
+  end
+
+  //ex/mem forwarding logic
+  always_comb begin
+    ForwardSel = '0;
+    if (exmemif.auipc) ForwardSel = 2'b10;
+    if (exmemif.jal || exmemif.jalr) ForwardSel = 2'b01;
+    if (exmemif.lui) ForwardSel = 2'b11;
   end
 
   //wdat control logic

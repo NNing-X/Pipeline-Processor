@@ -35,14 +35,15 @@ module datapath (
   mem_wb_if memwbif();
 
   logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, RegWrite;
-  logic [1:0] PCSrc;
+  logic [1:0] PCSrc, ForwardSel;
   logic [2:0] MemtoReg;
   logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush;
   aluop_t ALUOp;
   logic taken;
+  word_t forward_data;
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
-  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp);
+  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp, ForwardSel);
   hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN);
   /*=============================
   instruction fetch stage
@@ -258,6 +259,15 @@ module datapath (
   =============================*/
   assign dpif.dmemaddr = exmemif.aluOut;
   assign dpif.dmemREN = exmemif.MemRead;
+
+  always_comb begin
+    casez(ForwardSel)
+      2'b00: forward_data = exmemif.aluOut;
+      2'b01: forward_data = exmemif.pcPlus4;
+      2'b10: forward_data = exmemif.imm_pc;
+      2'b11: forward_data = exmemif.imm;
+    endcase
+  end
 
 //mem/wb latch latch
   always_ff @(posedge CLK, negedge nRST)begin
