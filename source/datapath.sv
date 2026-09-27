@@ -213,7 +213,7 @@ module datapath (
     2'b10: aluif.portA = memwbif.aluOut;
     endcase
     casez(ForwardB) 
-    2'b00: portB_temp = idexif.rdat1;
+    2'b00: portB_temp = idexif.rdat2;
     2'b01: portB_temp = exmemif.aluOut;
     2'b10: portB_temp = memwbif.aluOut;
     endcase
@@ -261,7 +261,7 @@ module datapath (
       exmemif.imm_pc <= imm_pc;
       exmemif.zero <= aluif.zero;
       exmemif.aluOut <= aluif.outputPort;
-      dpif.dmemstore <= idexif.rdat2;
+      dpif.dmemstore <= portB_temp;
       exmemif.imm <= idexif.imm;
       exmemif.wsel <= idexif.wsel;
     end
