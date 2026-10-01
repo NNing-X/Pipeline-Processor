@@ -43,6 +43,8 @@ add wave -noupdate /system_tb/DUT/CPU/DP/opcode
 add wave -noupdate /system_tb/DUT/CPU/DP/imm
 add wave -noupdate /system_tb/DUT/CPU/DP/state
 add wave -noupdate /system_tb/DUT/CPU/DP/next_state
+add wave -noupdate /system_tb/DUT/CPU/DP/portB_temp
+add wave -noupdate /system_tb/DUT/CPU/DP/taken
 add wave -noupdate -divider datapath_caches
 add wave -noupdate /system_tb/DUT/CPU/dcif/halt
 add wave -noupdate /system_tb/DUT/CPU/dcif/ihit
@@ -64,8 +66,45 @@ add wave -noupdate /system_tb/DUT/CPU/DP/rfif/rsel2
 add wave -noupdate /system_tb/DUT/CPU/DP/rfif/wdat
 add wave -noupdate /system_tb/DUT/CPU/DP/rfif/rdat1
 add wave -noupdate /system_tb/DUT/CPU/DP/rfif/rdat2
+add wave -noupdate -divider alu
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/zero
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/overflow
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/negative
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/op
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/portA
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/portB
+add wave -noupdate /system_tb/DUT/CPU/DP/aluif/outputPort
+add wave -noupdate -divider {forwarding unit}
+add wave -noupdate /system_tb/DUT/CPU/DP/FORWARD0/ForwardA
+add wave -noupdate /system_tb/DUT/CPU/DP/FORWARD0/ForwardB
+add wave -noupdate -divider idexif
+add wave -noupdate /system_tb/DUT/CPU/DP/idexif/ALUSrc
+add wave -noupdate /system_tb/DUT/CPU/DP/idexif/imm
+add wave -noupdate /system_tb/DUT/CPU/DP/idexif/wsel
+add wave -noupdate /system_tb/DUT/CPU/DP/idexif/rsel1
+add wave -noupdate /system_tb/DUT/CPU/DP/idexif/rsel2
+add wave -noupdate /system_tb/DUT/CPU/DP/idexif/halt
+add wave -noupdate -divider exmemif
+add wave -noupdate /system_tb/DUT/CPU/DP/exmemif/wsel
+add wave -noupdate /system_tb/DUT/CPU/DP/exmemif/halt
+add wave -noupdate -divider memwb
+add wave -noupdate /system_tb/DUT/CPU/DP/memwbif/halt
+add wave -noupdate -divider {hazard unit}
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/ihit
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/dhit
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/halt
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/MemWrite
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/MemRead
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/ifid_en
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/ifid_flush
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/idex_en
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/idex_flush
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/exmem_en
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/exmem_flush
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/imemREN
+add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/nop
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {380000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {1332749 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
@@ -81,4 +120,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {2268737 ps}
+WaveRestoreZoom {0 ps} {2097152 ps}

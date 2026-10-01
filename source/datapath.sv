@@ -42,10 +42,11 @@ module datapath (
   logic taken, nop;
   logic [1:0] ForwardA, ForwardB;
   word_t forward_data;
+  logic memwb_en, memwb_flush;
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
   pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp, ForwardSel);
-  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop);
+  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop, memwb_en, memwb_flush);
   forwarding_unit FORWARD0 (idexif, exmemif, memwbif, ForwardA, ForwardB);
   /*=============================
   instruction fetch stage
@@ -172,6 +173,8 @@ module datapath (
       idexif.rdat2 <= '0;
       idexif.imm <= '0;
       idexif.wsel <= '0;
+      idexif.rsel1 <='0;
+      idexif.rsel2 <= '0;
     end
     else if (idex_en) begin
       idexif.RegWrite <= RegWrite;
@@ -194,6 +197,8 @@ module datapath (
       idexif.rdat2 <= rfif.rdat2;
       idexif.imm <= imm;
       idexif.wsel <= ifidif.instruction[11:7];
+      idexif.rsel1 <= ifidif.instruction[19:15];
+      idexif.rsel2 <= ifidif.instruction[24:20];
     end
   end
 
@@ -285,7 +290,7 @@ module datapath (
 
 //mem/wb latch latch
   always_ff @(posedge CLK, negedge nRST)begin
-    if (!nRST)begin
+    if (!nRST || memwb_flush)begin
       memwbif.RegWrite <= '0;
       memwbif.MemRead <= '0;
       memwbif.jal <= '0;
@@ -301,7 +306,7 @@ module datapath (
       memwbif.dmemload <= '0;
       memwbif.taken <= '0;
     end
-    else begin
+    else if (memwb_en) begin
       memwbif.RegWrite <= exmemif.RegWrite;
       memwbif.MemRead <= exmemif.MemRead;
       memwbif.jal <= exmemif.jal;

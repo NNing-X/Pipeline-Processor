@@ -9,3 +9,4 @@ addi x5, x0, 30
 addi x6, x0, 50
 addi x5, x0, 30
 addi x6, x0, 50
+halt

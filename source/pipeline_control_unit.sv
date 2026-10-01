@@ -7,14 +7,9 @@ module pipeline_control_unit(
   output logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc,
   output logic [1:0] PCSrc, 
   output logic [2:0] MemtoReg, 
-<<<<<<< HEAD
-  output logic RegWrite, taken
+  output logic RegWrite, taken,
   output cpu_types_pkg::aluop_t ALUOp,
   output logic [1:0] ForwardSel
-=======
-  output logic RegWrite, taken,
-  output cpu_types_pkg::aluop_t ALUOp
->>>>>>> a37032feb2ca042a9f990d0d4da762a4e4eaf17e
 );
   import cpu_types_pkg::*;
 
@@ -154,6 +149,7 @@ module pipeline_control_unit(
   // logic [1:0] PCSrc;
   always_comb begin
     PCSrc = 2'b00;
+    taken = '0;
     if (exmemif.beq && exmemif.zero || exmemif.bne && !exmemif.zero || exmemif.blt && exmemif.aluOut || exmemif.bge && !exmemif.aluOut || exmemif.jal) begin
       PCSrc = 2'b01;
       taken = 1;

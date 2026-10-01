@@ -6,7 +6,8 @@ module hazard_unit (
   ex_mem_if exmemif, 
   mem_wb_if memwbif,
   datapath_cache_if dpif,
-  output logic nop
+  output logic nop,
+  output logic memwb_en, memwb_flush
 );  
 always_comb begin
     logic data_wait;
@@ -20,6 +21,8 @@ always_comb begin
     idex_flush = !ihit && !data_wait;
     exmem_en = !data_wait;
     exmem_flush = 0;
+    memwb_en = '1;
+    memwb_flush = '0;
     imemREN = halt ? 0:1;
     if (idexif.MemRead && ((idexif.wsel == ifidif.instruction[19:15]) || (idexif.wsel == ifidif.instruction[24:20])))begin
       ifid_en = 1'b0;
@@ -30,6 +33,11 @@ always_comb begin
       ifid_flush = '1;
       idex_flush = '1;
       exmem_flush = '1;
+      memwb_flush = '1;
+      ifid_en = '0;
+      idex_en = '0;
+      exmem_en = '0;
+      memwb_flush = '0;
     end
 end
   
