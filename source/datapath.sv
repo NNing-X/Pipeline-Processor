@@ -270,7 +270,7 @@ module datapath (
       exmemif.imm_pc <= imm_pc;
       exmemif.zero <= aluif.zero;
       exmemif.aluOut <= aluif.outputPort;
-      dpif.dmemstore <= portB_temp;
+     dpif.dmemstore <= portB_temp;
       exmemif.imm <= idexif.imm;
       exmemif.wsel <= idexif.wsel;
     end
@@ -281,7 +281,6 @@ module datapath (
   =============================*/
   assign dpif.dmemaddr = exmemif.aluOut;
   assign dpif.dmemREN = exmemif.MemRead;
-
   always_comb begin
     casez(ForwardSel)
       2'b00: forward_data = exmemif.aluOut;
@@ -360,7 +359,7 @@ module datapath (
     //   next_imemREN = 1'b0;
     // end
     casez(state)
-      IDLE: next_state = memwbif.halt ? HALT:IDLE;
+      IDLE: next_state = memwbif.halt? HALT:IDLE;
       HALT: next_state = HALT;
     endcase
   end

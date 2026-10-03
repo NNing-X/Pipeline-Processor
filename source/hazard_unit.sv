@@ -29,7 +29,7 @@ always_comb begin
       idex_en = 1'b0;
       nop = 1'b1;
     end
-    if (taken || memwbif.halt) begin
+    if (taken) begin
       ifid_flush = '1;
       idex_flush = '1;
       exmem_flush = '1;
