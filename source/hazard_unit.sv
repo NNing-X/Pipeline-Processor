@@ -33,11 +33,11 @@ always_comb begin
       ifid_flush = '1;
       idex_flush = '1;
       exmem_flush = '1;
-      memwb_flush = '1;
+      // memwb_flush = '1;
       ifid_en = '0;
       idex_en = '0;
       exmem_en = '0;
-      memwb_en = '0;
+      // memwb_en = '0;
     end
 end
   

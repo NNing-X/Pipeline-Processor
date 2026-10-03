@@ -73,6 +73,9 @@ module datapath (
     if (~nRST) begin
       dpif.imemaddr <= PC_INIT;
     end
+    else if (taken) begin
+      dpif.imemaddr <= next_imemaddr;
+    end
     else if (ifid_en) begin
       dpif.imemaddr <= next_imemaddr;
     end
@@ -357,7 +360,7 @@ module datapath (
     //   next_imemREN = 1'b0;
     // end
     casez(state)
-      IDLE: next_state = exmemif.halt ? HALT:IDLE;
+      IDLE: next_state = memwbif.halt ? HALT:IDLE;
       HALT: next_state = HALT;
     endcase
   end
