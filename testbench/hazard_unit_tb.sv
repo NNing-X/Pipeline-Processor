@@ -26,7 +26,6 @@ module hazard_unit_tb;
 
     string testname;
     int testNum;
-<<<<<<< HEAD
     
     idexif.rsel1 = '0;
     idexif.rsel2 = '0;
@@ -34,7 +33,6 @@ module hazard_unit_tb;
     memwbif.wsel = '0;
     exmemif.RegWrite = '0;
     memwbif.RegWrite = '0;
-=======
     logic data_wait;
     data_wait = 0;
     ihit = '1;
@@ -47,7 +45,6 @@ module hazard_unit_tb;
     memwbif.taken = '0;
     ifidif.instruction[19:15] = 5'd0;
 
->>>>>>> 4c13ed19a558a2c86a1c98f64d0ade0a0e595aff
     #(5ns);
     testname = "load use(rs1) happened";
     testNum = 0;
