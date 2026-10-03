@@ -1,19 +1,10 @@
-org 0x0000
-ori $5, $0, 0x733
-nop
-nop
-nop
-nop
-lui $9, 0xFFFFF
-nop
-nop
-nop
-nop
-ori $10, $0, 0x100
-nop
-nop
-nop
-nop
-sw $5, 0($10)
-sw $9, 0($10)
-halt
+li $3, 5
+li $4, 6
+li $5, 0x80
+li $6, 0x90
+jal endtest
+sw $4, 0($6)
+
+endtest:
+    sw $3, 0($5)
+    halt

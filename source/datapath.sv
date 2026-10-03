@@ -46,7 +46,7 @@ module datapath (
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
   pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp, ForwardSel);
-  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop, memwb_en, memwb_flush);
+  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, taken, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop, memwb_en, memwb_flush);
   forwarding_unit FORWARD0 (idexif, exmemif, memwbif, ForwardA, ForwardB);
   /*=============================
   instruction fetch stage
@@ -357,7 +357,7 @@ module datapath (
     //   next_imemREN = 1'b0;
     // end
     casez(state)
-      IDLE: next_state = memwbif.halt? HALT:IDLE;
+      IDLE: next_state = exmemif.halt ? HALT:IDLE;
       HALT: next_state = HALT;
     endcase
   end

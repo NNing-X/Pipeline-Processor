@@ -1,13 +1,3 @@
-# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# vsim -coverage -suppress 12110 -c -do "run -all; exit;" "+define+USE_VIVADO" -L unisim -wlf system_tb.wlf work.system_tb glbl 
-# Start time: 19:27:13 on Oct 01,2026
-# ** Note: (vsim-8009) Loading existing optimized design _opt
-# Break key hit
 # //  Questa Sim-64
 # //  Version 2021.4 linux_x86_64 Oct 13 2021
 # //
@@ -22,6 +12,50 @@
 # //  is prohibited from disclosure under the Trade Secrets Act,
 # //  18 U.S.C. Section 1905.
 # //
-# Error loading design
-# End time: 19:27:14 on Oct 01,2026, Elapsed time: 0:00:01
+# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
+# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
+# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
+# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
+# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
+# ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
+# vsim -coverage -suppress 12110 -do "view objects; do scripts/system.do; run -all;" -onfinish stop "+define+USE_VIVADO" -L unisim -wlf system_tb.wlf work.system_tb glbl 
+# Start time: 15:16:02 on Oct 03,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# Loading sv_std.std
+# Loading work.system_tb(fast)
+# Loading work.cpu_types_pkg(fast)
+# Loading work.system_if(fast__1)
+# Loading work.test(fast)
+# Loading work.system(fast)
+# Loading work.cpu_ram_if(fast__1)
+# Loading work.pipeline(fast)
+# Loading work.datapath_cache_if(fast__1)
+# Loading work.caches_if(fast__1)
+# Loading work.cache_control_if(fast__1)
+# Loading work.datapath(fast)
+# Loading work.register_file_if(fast__1)
+# Loading work.alu_if(fast__1)
+# Loading work.if_id_if(fast__1)
+# Loading work.id_ex_if(fast__1)
+# Loading work.ex_mem_if(fast__1)
+# Loading work.mem_wb_if(fast__1)
+# Loading work.register_file(fast)
+# Loading work.alu(fast)
+# Loading work.pipeline_control_unit(fast)
+# Loading work.hazard_unit(fast)
+# Loading work.forwarding_unit(fast)
+# Loading work.caches(fast)
+# Loading work.memory_control(fast)
+# Loading work.ram(fast)
+# Loading work.glbl(fast)
+# view objects
+# .main_pane.objects.interior.cs.body.tree
+#  do scripts/system.do
+#  run -all
+# 
+# Starting RTL Processor.
+# 
+# Break key hit
+# Break in Module caches at source/caches.sv line 34
+# End time: 15:19:38 on Oct 03,2026, Elapsed time: 0:03:36
 # Errors: 0, Warnings: 0
