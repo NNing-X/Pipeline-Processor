@@ -83,7 +83,11 @@ module datapath (
 
   //if/id latch
   always_ff @(posedge CLK, negedge nRST)begin
-    if (ifid_flush | !nRST)begin
+    if (!nRST)begin
+      ifidif.pcPlus4 <= '0;
+      ifidif.pc <= '0;
+      ifidif.instruction <= '0;
+    end else if (ifid_flush) begin
       ifidif.pcPlus4 <= '0;
       ifidif.pc <= '0;
       ifidif.instruction <= '0;
@@ -155,7 +159,30 @@ module datapath (
 
   //id/ex latch
   always_ff @(posedge CLK, negedge nRST)begin
-    if (idex_flush | !nRST)begin
+    if (!nRST)begin
+      idexif.RegWrite <= '0;
+      idexif.MemRead <= '0;
+      idexif.jal <= '0;
+      idexif.jalr <= '0;
+      idexif.auipc <= '0;
+      idexif.lui <= '0;
+      idexif.halt <= '0;
+      idexif.MemWrite <= '0;
+      idexif.beq <= '0;
+      idexif.bne <= '0;
+      idexif.blt <= '0;
+      idexif.bge <= '0;
+      idexif.ALUOp <= ALU_ADD;
+      idexif.ALUSrc <= '0;
+      idexif.pcPlus4 <= '0;
+      idexif.pc <= '0;
+      idexif.rdat1 <= '0;
+      idexif.rdat2 <= '0;
+      idexif.imm <= '0;
+      idexif.wsel <= '0;
+      idexif.rsel1 <='0;
+      idexif.rsel2 <= '0;
+    end else if (idex_flush) begin
       idexif.RegWrite <= '0;
       idexif.MemRead <= '0;
       idexif.jal <= '0;
@@ -220,11 +247,13 @@ module datapath (
     2'b00: aluif.portA = idexif.rdat1;
     2'b01: aluif.portA = forward_data;
     2'b10: aluif.portA = wdat;
+    default: aluif.portA = idexif.rdat1;
     endcase
     casez(ForwardB) 
     2'b00: portB_temp = idexif.rdat2;
     2'b01: portB_temp = forward_data;
     2'b10: portB_temp = wdat;
+    default portB_temp = idexif.rdat2;
     endcase
   end
   assign aluif.portB = idexif.ALUSrc ? idexif.imm : portB_temp;
@@ -232,7 +261,27 @@ module datapath (
 
   //ex/mem latch
   always_ff @(posedge CLK, negedge nRST)begin
-    if (exmem_flush | !nRST)begin
+    if (!nRST)begin
+      exmemif.RegWrite <= '0;
+      exmemif.MemRead <= '0;
+      exmemif.jal <= '0;
+      exmemif.jalr <= '0;
+      exmemif.auipc <= '0;
+      exmemif.lui <= '0;
+      exmemif.halt <= '0;
+      dpif.dmemWEN <= '0;
+      exmemif.beq <= '0;
+      exmemif.bne <= '0;
+      exmemif.blt <= '0;
+      exmemif.bge <= '0;
+      exmemif.pcPlus4 <= '0;
+      exmemif.imm_pc <= '0;
+      exmemif.zero <= '0;
+      exmemif.aluOut <= '0;
+      dpif.dmemstore <= '0;
+      exmemif.imm <= '0;
+      exmemif.wsel <= '0;
+    end else if (exmem_flush) begin
       exmemif.RegWrite <= '0;
       exmemif.MemRead <= '0;
       exmemif.jal <= '0;
@@ -292,7 +341,22 @@ module datapath (
 
 //mem/wb latch latch
   always_ff @(posedge CLK, negedge nRST)begin
-    if (!nRST || memwb_flush)begin
+    if (!nRST)begin
+      memwbif.RegWrite <= '0;
+      memwbif.MemRead <= '0;
+      memwbif.jal <= '0;
+      memwbif.jalr <= '0;
+      memwbif.auipc <= '0;
+      memwbif.lui <= '0;
+      memwbif.halt <= '0;
+      memwbif.pcPlus4 <= '0;
+      memwbif.imm_pc <= '0;
+      memwbif.aluOut <= '0;
+      memwbif.imm <= '0;
+      memwbif.wsel <= '0;
+      memwbif.dmemload <= '0;
+      memwbif.taken <= '0;
+    end else if (memwb_flush) begin
       memwbif.RegWrite <= '0;
       memwbif.MemRead <= '0;
       memwbif.jal <= '0;
@@ -337,6 +401,7 @@ module datapath (
       3'b010: wdat = memwbif.pcPlus4;
       3'b011: wdat = memwbif.dmemload;
       3'b100: wdat = memwbif.imm;
+      default: wdat = memwbif.aluOut;
     endcase
   end
 
