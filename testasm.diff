@@ -270,3 +270,6 @@ processing file asmFiles/test.loaduse.asm (33 of 36)
 processing file asmFiles/test.rtype.asm (34 of 36)
 processing file asmFiles/write_after_read.asm (35 of 36)
 processing file asmFiles/write_after_write.asm (36 of 36)
+processing file asmFiles/predictor.asm (1 of 1)
+processing file asmFiles/mergesort.asm (1 of 1)
+diff: memfpga.hex: No such file or directory
