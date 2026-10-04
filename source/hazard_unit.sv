@@ -21,15 +21,15 @@ always_comb begin
     idex_flush = !ihit && !data_wait;
     exmem_en = !data_wait;
     exmem_flush = 0;
-    memwb_en = '1;
+    memwb_en = !data_wait;
     memwb_flush = '0;
     imemREN = halt ? 0:1;
     if (idexif.MemRead && ((idexif.wsel == ifidif.instruction[19:15]) || (idexif.wsel == ifidif.instruction[24:20])))begin
       ifid_en = 1'b0;
-      idex_en = 1'b0;
+      idex_flush = !data_wait;
       nop = 1'b1;
     end
-    if (taken || memwbif.halt) begin
+    if (taken) begin
       ifid_flush = '1;
       idex_flush = '1;
       exmem_flush = '1;

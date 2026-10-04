@@ -7,7 +7,7 @@ interface ex_mem_if;
   // import types
   import cpu_types_pkg::*;
 
-  logic     RegWrite, MemRead, jal, jalr, auipc, lui, halt, dmemWEN, beq, bne, blt, bge, zero;
+  logic     RegWrite, MemRead, jal, jalr, auipc, lui, halt, beq, bne, blt, bge, zero;
   word_t    imm_pc, pcPlus4, aluOut, dmemstore, imm;
   regbits_t wsel;
 endinterface
