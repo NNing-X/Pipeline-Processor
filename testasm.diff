@@ -88,3 +88,185 @@ processing file asmFiles/beq_taken.asm (1 of 1)
  :0400010000300213B6
  :040002000000029365
  :040003000050202366
+processing file asmFiles/beq_taken.asm (1 of 1)
+processing file asmFiles/aluop_and_alubranch.asm (1 of 36)
+processing file asmFiles/beq_notTaken.asm (2 of 36)
+processing file asmFiles/beq_taken.asm (3 of 36)
+processing file asmFiles/bge_notTaken.asm (4 of 36)
+processing file asmFiles/bge_taken.asm (5 of 36)
+processing file asmFiles/bgeu_notTaken.asm (6 of 36)
+processing file asmFiles/bgeu_taken.asm (7 of 36)
+processing file asmFiles/blt_notTaken.asm (8 of 36)
+processing file asmFiles/blt_taken.asm (9 of 36)
+processing file asmFiles/bltu_notTaken.asm (10 of 36)
+processing file asmFiles/bltu.taken.asm (11 of 36)
+processing file asmFiles/bne_notTaken.asm (12 of 36)
+processing file asmFiles/bne_taken.asm (13 of 36)
+processing file asmFiles/branch_hazard2.asm (14 of 36)
+processing file asmFiles/branch_hazard.asm (15 of 36)
+processing file asmFiles/count_days.asm (16 of 36)
+processing file asmFiles/fetch_and_instr.asm (17 of 36)
+processing file asmFiles/fib.asm (18 of 36)
+processing file asmFiles/halt.asm (19 of 36)
+processing file asmFiles/jal.asm (20 of 36)
+processing file asmFiles/jalr.asm (21 of 36)
+processing file asmFiles/mergesort.asm (22 of 36)
+processing file asmFiles/mult.asm (23 of 36)
+processing file asmFiles/mult_procedure.asm (24 of 36)
+processing file asmFiles/other.asm (25 of 36)
+processing file asmFiles/read_after_write.asm (26 of 36)
+processing file asmFiles/search.asm (27 of 36)
+processing file asmFiles/temptest.asm (28 of 36)
+processing file asmFiles/test.branchjump1.asm (29 of 36)
+processing file asmFiles/test.ldst1.asm (30 of 36)
+processing file asmFiles/test.ldst2.asm (31 of 36)
+processing file asmFiles/test.loadstore.asm (32 of 36)
+processing file asmFiles/test.loaduse.asm (33 of 36)
+processing file asmFiles/test.rtype.asm (34 of 36)
+processing file asmFiles/write_after_read.asm (35 of 36)
+processing file asmFiles/write_after_write.asm (36 of 36)
+processing file asmFiles/aluop_and_alubranch.asm (1 of 36)
+processing file asmFiles/beq_notTaken.asm (2 of 36)
+processing file asmFiles/beq_taken.asm (3 of 36)
+processing file asmFiles/bge_notTaken.asm (4 of 36)
+processing file asmFiles/bge_taken.asm (5 of 36)
+processing file asmFiles/bgeu_notTaken.asm (6 of 36)
+processing file asmFiles/bgeu_taken.asm (7 of 36)
+processing file asmFiles/blt_notTaken.asm (8 of 36)
+processing file asmFiles/blt_taken.asm (9 of 36)
+processing file asmFiles/bltu_notTaken.asm (10 of 36)
+processing file asmFiles/bltu.taken.asm (11 of 36)
+processing file asmFiles/bne_notTaken.asm (12 of 36)
+processing file asmFiles/bne_taken.asm (13 of 36)
+processing file asmFiles/branch_hazard2.asm (14 of 36)
+processing file asmFiles/branch_hazard.asm (15 of 36)
+processing file asmFiles/count_days.asm (16 of 36)
+processing file asmFiles/fetch_and_instr.asm (17 of 36)
+processing file asmFiles/fib.asm (18 of 36)
+processing file asmFiles/halt.asm (19 of 36)
+--- memsim.hex	2026-10-04 17:26:21.752578144 -0400
++++ memcpu.hex	2026-10-04 17:26:21.747578196 -0400
+@@ -1,4 +1,4 @@
+-:0400000000000001FB
++:0400000000000002FA
+ :040001000030202388
+ :04000200FFFFFFFFFE
+ :040003000020019345
+processing file asmFiles/jal.asm (20 of 36)
+processing file asmFiles/jalr.asm (21 of 36)
+processing file asmFiles/mergesort.asm (22 of 36)
+processing file asmFiles/mult.asm (23 of 36)
+processing file asmFiles/mult_procedure.asm (24 of 36)
+processing file asmFiles/other.asm (25 of 36)
+processing file asmFiles/read_after_write.asm (26 of 36)
+processing file asmFiles/search.asm (27 of 36)
+processing file asmFiles/temptest.asm (28 of 36)
+processing file asmFiles/test.branchjump1.asm (29 of 36)
+--- memsim.hex	2026-10-04 17:26:35.465437600 -0400
++++ memcpu.hex	2026-10-04 17:26:35.460437652 -0400
+@@ -16,6 +16,6 @@
+ :04000F00004526235F
+ :04001000FEB094E3C7
+ :04001100FFFFFFFFEF
+-:0400220000000024B6
++:040022000000003C9E
+ :040024000000003C9C
+ :00000001FF
+processing file asmFiles/test.ldst1.asm (30 of 36)
+processing file asmFiles/test.ldst2.asm (31 of 36)
+processing file asmFiles/test.loadstore.asm (32 of 36)
+processing file asmFiles/test.loaduse.asm (33 of 36)
+processing file asmFiles/test.rtype.asm (34 of 36)
+processing file asmFiles/write_after_read.asm (35 of 36)
+processing file asmFiles/write_after_write.asm (36 of 36)
+processing file asmFiles/halt.asm (1 of 1)
+--- memsim.hex	2026-10-04 17:33:15.487332554 -0400
++++ memcpu.hex	2026-10-04 17:33:05.985430034 -0400
+@@ -1,4 +1,4 @@
+-:0400000000000001FB
++:0400000000000002FA
+ :040001000030202388
+ :04000200FFFFFFFFFE
+ :040003000020019345
+processing file asmFiles/halt.asm (1 of 1)
+--- memsim.hex	2026-10-04 17:33:38.554095926 -0400
++++ memcpu.hex	2026-10-04 17:33:38.549095977 -0400
+@@ -1,4 +1,4 @@
+-:0400000000000001FB
++:0400000000000002FA
+ :040001000030202388
+ :04000200FFFFFFFFFE
+ :040003000020019345
+processing file asmFiles/halt.asm (1 of 1)
+processing file asmFiles/aluop_and_alubranch.asm (1 of 36)
+processing file asmFiles/beq_notTaken.asm (2 of 36)
+processing file asmFiles/beq_taken.asm (3 of 36)
+processing file asmFiles/bge_notTaken.asm (4 of 36)
+processing file asmFiles/bge_taken.asm (5 of 36)
+processing file asmFiles/bgeu_notTaken.asm (6 of 36)
+processing file asmFiles/bgeu_taken.asm (7 of 36)
+processing file asmFiles/blt_notTaken.asm (8 of 36)
+processing file asmFiles/blt_taken.asm (9 of 36)
+processing file asmFiles/bltu_notTaken.asm (10 of 36)
+processing file asmFiles/bltu.taken.asm (11 of 36)
+processing file asmFiles/bne_notTaken.asm (12 of 36)
+processing file asmFiles/bne_taken.asm (13 of 36)
+processing file asmFiles/branch_hazard2.asm (14 of 36)
+processing file asmFiles/branch_hazard.asm (15 of 36)
+processing file asmFiles/count_days.asm (16 of 36)
+processing file asmFiles/fetch_and_instr.asm (17 of 36)
+processing file asmFiles/fib.asm (18 of 36)
+processing file asmFiles/halt.asm (19 of 36)
+processing file asmFiles/jal.asm (20 of 36)
+processing file asmFiles/jalr.asm (21 of 36)
+processing file asmFiles/mergesort.asm (22 of 36)
+processing file asmFiles/mult.asm (23 of 36)
+processing file asmFiles/mult_procedure.asm (24 of 36)
+processing file asmFiles/other.asm (25 of 36)
+processing file asmFiles/read_after_write.asm (26 of 36)
+processing file asmFiles/search.asm (27 of 36)
+processing file asmFiles/temptest.asm (28 of 36)
+processing file asmFiles/test.branchjump1.asm (29 of 36)
+processing file asmFiles/test.ldst1.asm (30 of 36)
+processing file asmFiles/test.ldst2.asm (31 of 36)
+processing file asmFiles/test.loadstore.asm (32 of 36)
+processing file asmFiles/test.loaduse.asm (33 of 36)
+processing file asmFiles/test.rtype.asm (34 of 36)
+processing file asmFiles/write_after_read.asm (35 of 36)
+processing file asmFiles/write_after_write.asm (36 of 36)
+processing file asmFiles/aluop_and_alubranch.asm (1 of 36)
+processing file asmFiles/beq_notTaken.asm (2 of 36)
+processing file asmFiles/beq_taken.asm (3 of 36)
+processing file asmFiles/bge_notTaken.asm (4 of 36)
+processing file asmFiles/bge_taken.asm (5 of 36)
+processing file asmFiles/bgeu_notTaken.asm (6 of 36)
+processing file asmFiles/bgeu_taken.asm (7 of 36)
+processing file asmFiles/blt_notTaken.asm (8 of 36)
+processing file asmFiles/blt_taken.asm (9 of 36)
+processing file asmFiles/bltu_notTaken.asm (10 of 36)
+processing file asmFiles/bltu.taken.asm (11 of 36)
+processing file asmFiles/bne_notTaken.asm (12 of 36)
+processing file asmFiles/bne_taken.asm (13 of 36)
+processing file asmFiles/branch_hazard2.asm (14 of 36)
+processing file asmFiles/branch_hazard.asm (15 of 36)
+processing file asmFiles/count_days.asm (16 of 36)
+processing file asmFiles/fetch_and_instr.asm (17 of 36)
+processing file asmFiles/fib.asm (18 of 36)
+processing file asmFiles/halt.asm (19 of 36)
+processing file asmFiles/jal.asm (20 of 36)
+processing file asmFiles/jalr.asm (21 of 36)
+processing file asmFiles/mergesort.asm (22 of 36)
+processing file asmFiles/mult.asm (23 of 36)
+processing file asmFiles/mult_procedure.asm (24 of 36)
+processing file asmFiles/other.asm (25 of 36)
+processing file asmFiles/read_after_write.asm (26 of 36)
+processing file asmFiles/search.asm (27 of 36)
+processing file asmFiles/temptest.asm (28 of 36)
+processing file asmFiles/test.branchjump1.asm (29 of 36)
+processing file asmFiles/test.ldst1.asm (30 of 36)
+processing file asmFiles/test.ldst2.asm (31 of 36)
+processing file asmFiles/test.loadstore.asm (32 of 36)
+processing file asmFiles/test.loaduse.asm (33 of 36)
+processing file asmFiles/test.rtype.asm (34 of 36)
+processing file asmFiles/write_after_read.asm (35 of 36)
+processing file asmFiles/write_after_write.asm (36 of 36)

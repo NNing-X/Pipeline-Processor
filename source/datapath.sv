@@ -93,16 +93,18 @@ module datapath (
       ifidif.pcPlus4 <= '0;
       ifidif.pc <= '0;
       ifidif.instruction <= '0;
+      ifidif.predicted_taken <= '0;
     end else if (ifid_flush) begin
       ifidif.pcPlus4 <= '0;
       ifidif.pc <= '0;
       ifidif.instruction <= '0;
+      ifidif.predicted_taken <= '0;
     end
     else if (ifid_en) begin
       ifidif.pcPlus4 <= pcPlus4;
       ifidif.pc <= dpif.imemaddr;
       ifidif.instruction <= dpif.imemload;
-      ifidif.predicted_taken <= predicted_taken;
+      ifidif.predicted_taken <= predicted_taken && btb_hit;
     end
   end
 

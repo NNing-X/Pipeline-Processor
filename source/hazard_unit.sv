@@ -29,7 +29,7 @@ always_comb begin
       idex_flush = !data_wait;
       nop = 1'b1;
     end
-    if (mispredicted) begin
+    if (mispredicted || exmemif.halt) begin
       ifid_flush = '1;
       idex_flush = '1;
       exmem_flush = '1;

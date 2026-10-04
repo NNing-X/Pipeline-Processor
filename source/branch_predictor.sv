@@ -8,7 +8,7 @@ module branch_predictor #(parameter ENTRIES = 16)(
 import cpu_types_pkg::*;
 
 typedef enum logic [1:0]{STRONG_T, WEAK_T, STRONG_NT, WEAK_NT} state_t;
-state_t state,next_state [ENTRIES];
+state_t state[ENTRIES],next_state [ENTRIES];
 logic [3:0] pc_index;
 logic [3:0] update_index;
 assign pc_index = dpif.imemaddr[5:2];
