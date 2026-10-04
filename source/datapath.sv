@@ -35,7 +35,7 @@ module datapath (
   mem_wb_if memwbif();
 
   logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, RegWrite;
-  logic [1:0] PCSrc, ForwardSel;
+  logic [1:0] ForwardSel;
   logic [2:0] MemtoReg;
   logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush;
   aluop_t ALUOp;
@@ -43,38 +43,44 @@ module datapath (
   logic [1:0] ForwardA, ForwardB;
   word_t forward_data;
   logic memwb_en, memwb_flush;
+  logic update, mispredicted, predicted_taken, btb_hit;
+  word_t actual_target, btb_target, pcPlus4, next_imemaddr;
+
   register_file RF0 (CLK, nRST, rfif);
   alu ALU0 (aluif);
-  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, PCSrc, MemtoReg, RegWrite, taken, ALUOp, ForwardSel);
-  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, taken, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop, memwb_en, memwb_flush);
+  pipeline_control_unit CTRL0 (ifidif, exmemif, memwbif, predicted_taken, btb_hit, pcPlus4, btb_target, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc, MemtoReg, RegWrite, taken, update, mispredicted, actual_target, next_imemaddr, ALUOp, ForwardSel);
+  hazard_unit HAZARD0 (dpif.ihit, dpif.dhit, dpif.halt, dpif.dmemWEN, dpif.dmemREN, taken, mispredicted, ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, dpif.imemREN, ifidif, idexif, exmemif, memwbif, dpif, nop, memwb_en, memwb_flush);
   forwarding_unit FORWARD0 (idexif, exmemif, memwbif, ForwardA, ForwardB);
+  branch_predictor #(16) BP0 (dpif, exmemif, CLK, nRST, taken, update, predicted_taken);
+  branch_target_buffer #(16) BTB0 (dpif, CLK, nRST, update, actual_target, exmemif, btb_target, btb_hit);
+
   /*=============================
   instruction fetch stage
   =============================*/
-  logic [31:0] pcPlus4, imm_pc;
+  logic [31:0] imm_pc;
   always_comb begin
     pcPlus4 = dpif.imemaddr + 32'd4;
     // imm_pc = dpif.imemaddr + imm;
   end
 
   //PCSrc mux
-  logic [31:0] next_imemaddr;
-  always_comb begin
-    casez(PCSrc)
-      2'b00: next_imemaddr = pcPlus4;
-      2'b01: next_imemaddr = exmemif.imm_pc;
-      2'b10: next_imemaddr = exmemif.aluOut;
-      default: next_imemaddr = PC_INIT;
-    endcase
-  end
+  // logic [31:0] next_imemaddr;
+  // always_comb begin
+  //   casez(PCSrc)
+  //     2'b00: next_imemaddr = pcPlus4;
+  //     2'b01: next_imemaddr = exmemif.imm_pc;
+  //     2'b10: next_imemaddr = exmemif.aluOut;
+  //     default: next_imemaddr = PC_INIT;
+  //   endcase
+  // end
 
   //pc register
   always_ff @(posedge CLK, negedge nRST)begin
     if (~nRST) begin
       dpif.imemaddr <= PC_INIT;
     end
-    else if (taken) begin
-      dpif.imemaddr <= next_imemaddr;
+    else if (mispredicted) begin
+      dpif.imemaddr <= actual_target;
     end
     else if (ifid_en) begin
       dpif.imemaddr <= next_imemaddr;
@@ -96,6 +102,7 @@ module datapath (
       ifidif.pcPlus4 <= pcPlus4;
       ifidif.pc <= dpif.imemaddr;
       ifidif.instruction <= dpif.imemload;
+      ifidif.predicted_taken <= predicted_taken;
     end
   end
 
@@ -182,6 +189,7 @@ module datapath (
       idexif.wsel <= '0;
       idexif.rsel1 <='0;
       idexif.rsel2 <= '0;
+      idexif.predicted_taken <= '0;
     end else if (idex_flush) begin
       idexif.RegWrite <= '0;
       idexif.MemRead <= '0;
@@ -205,6 +213,7 @@ module datapath (
       idexif.wsel <= '0;
       idexif.rsel1 <='0;
       idexif.rsel2 <= '0;
+      idexif.predicted_taken <= '0;
     end
     else if (idex_en) begin
       idexif.RegWrite <= RegWrite;
@@ -229,6 +238,7 @@ module datapath (
       idexif.wsel <= ifidif.instruction[11:7];
       idexif.rsel1 <= ifidif.instruction[19:15];
       idexif.rsel2 <= ifidif.instruction[24:20];
+      idexif.predicted_taken <= ifidif.predicted_taken;
     end
   end
 
@@ -281,6 +291,8 @@ module datapath (
       dpif.dmemstore <= '0;
       exmemif.imm <= '0;
       exmemif.wsel <= '0;
+      exmemif.pc <= '0;
+      exmemif.predicted_taken <= '0;
     end else if (exmem_flush) begin
       exmemif.RegWrite <= '0;
       exmemif.MemRead <= '0;
@@ -301,6 +313,8 @@ module datapath (
       dpif.dmemstore <= '0;
       exmemif.imm <= '0;
       exmemif.wsel <= '0;
+      exmemif.pc <= '0;
+      exmemif.predicted_taken <= '0;
     end
     else if (exmem_en) begin
       exmemif.RegWrite <= idexif.RegWrite;
@@ -319,9 +333,11 @@ module datapath (
       exmemif.imm_pc <= imm_pc;
       exmemif.zero <= aluif.zero;
       exmemif.aluOut <= aluif.outputPort;
-     dpif.dmemstore <= portB_temp;
+      dpif.dmemstore <= portB_temp;
       exmemif.imm <= idexif.imm;
       exmemif.wsel <= idexif.wsel;
+      exmemif.pc <= idexif.pc;
+      exmemif.predicted_taken <= idexif.predicted_taken;
     end
   end
 

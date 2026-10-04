@@ -23,7 +23,6 @@ add wave -noupdate /system_tb/DUT/CPU/DP/bne
 add wave -noupdate /system_tb/DUT/CPU/DP/blt
 add wave -noupdate /system_tb/DUT/CPU/DP/bge
 add wave -noupdate /system_tb/DUT/CPU/DP/ALUSrc
-add wave -noupdate /system_tb/DUT/CPU/DP/PCSrc
 add wave -noupdate /system_tb/DUT/CPU/DP/MemtoReg
 add wave -noupdate /system_tb/DUT/CPU/DP/RegWrite
 add wave -noupdate /system_tb/DUT/CPU/DP/ifid_en
@@ -103,8 +102,21 @@ add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/exmem_en
 add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/exmem_flush
 add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/imemREN
 add wave -noupdate /system_tb/DUT/CPU/DP/HAZARD0/nop
+add wave -noupdate -divider {branch predictor}
+add wave -noupdate /system_tb/DUT/CPU/DP/update
+add wave -noupdate /system_tb/DUT/CPU/DP/mispredicted
+add wave -noupdate /system_tb/DUT/CPU/DP/predicted_taken
+add wave -noupdate /system_tb/DUT/CPU/DP/btb_hit
+add wave -noupdate /system_tb/DUT/CPU/DP/actual_target
+add wave -noupdate /system_tb/DUT/CPU/DP/btb_target
+add wave -noupdate /system_tb/DUT/CPU/DP/BP0/taken
+add wave -noupdate /system_tb/DUT/CPU/DP/BP0/update
+add wave -noupdate /system_tb/DUT/CPU/DP/BP0/predicted_taken
+add wave -noupdate /system_tb/DUT/CPU/DP/BP0/state
+add wave -noupdate /system_tb/DUT/CPU/DP/BP0/next_state
+add wave -noupdate /system_tb/DUT/CPU/DP/BP0/index
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {1332749 ps} 0}
+WaveRestoreCursors {{Cursor 1} {692435 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100

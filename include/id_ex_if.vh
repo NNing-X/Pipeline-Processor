@@ -10,7 +10,7 @@ interface id_ex_if;
   word_t instruction, pcPlus4, pc, imm, rdat1, rdat2;
   regbits_t wsel, rsel1, rsel2;
   aluop_t ALUOp;
-  logic ALUSrc, RegWrite, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge;
+  logic ALUSrc, RegWrite, MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, predicted_taken;
 
 endinterface
 

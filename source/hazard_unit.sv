@@ -1,5 +1,5 @@
 module hazard_unit (
-  input logic ihit, dhit, halt, MemWrite, MemRead, taken,
+  input logic ihit, dhit, halt, MemWrite, MemRead, taken, mispredicted,
   output logic ifid_en, ifid_flush, idex_en, idex_flush, exmem_en, exmem_flush, imemREN,
   if_id_if ifidif, 
   id_ex_if idexif, 
@@ -29,7 +29,7 @@ always_comb begin
       idex_flush = !data_wait;
       nop = 1'b1;
     end
-    if (taken) begin
+    if (mispredicted) begin
       ifid_flush = '1;
       idex_flush = '1;
       exmem_flush = '1;

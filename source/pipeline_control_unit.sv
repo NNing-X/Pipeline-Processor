@@ -1,17 +1,20 @@
 `include "cpu_types_pkg.vh"
 
-module pipeline_control_unit(
+module pipeline_control_unit import cpu_types_pkg::*;(
   if_id_if ifidif,
   ex_mem_if exmemif,
   mem_wb_if memwbif,
+  input logic predicted_taken, btb_hit,
+  input word_t pcPlus4, btb_target,
   output logic MemRead, jal, jalr, auipc, lui, halt, MemWrite, beq, bne, blt, bge, ALUSrc,
-  output logic [1:0] PCSrc, 
+  // output logic [1:0] PCSrc, 
   output logic [2:0] MemtoReg, 
-  output logic RegWrite, taken,
+  output logic RegWrite, taken, update, mispredicted,
+  output word_t actual_target, next_imemaddr,
   output cpu_types_pkg::aluop_t ALUOp,
   output logic [1:0] ForwardSel
 );
-  import cpu_types_pkg::*;
+  
 
   //main control
   logic [2:0] funct3;
@@ -147,18 +150,50 @@ module pipeline_control_unit(
 
   //PCSrc control
   // logic [1:0] PCSrc;
+  // always_comb begin
+  //   PCSrc = 2'b00;
+  //   taken = '0;
+  //   if (exmemif.beq && exmemif.zero || exmemif.bne && !exmemif.zero || exmemif.blt && exmemif.aluOut || exmemif.bge && !exmemif.aluOut || exmemif.jal) begin
+  //     PCSrc = 2'b01;
+  //     taken = 1;
+  //   end
+  //   else if (exmemif.jalr) begin 
+  //     PCSrc = 2'b10;
+  //     taken = 1;
+  //   end
+  // end
   always_comb begin
-    PCSrc = 2'b00;
     taken = '0;
-    if (exmemif.beq && exmemif.zero || exmemif.bne && !exmemif.zero || exmemif.blt && exmemif.aluOut || exmemif.bge && !exmemif.aluOut || exmemif.jal) begin
-      PCSrc = 2'b01;
-      taken = 1;
+    update = '0;
+    mispredicted = '0;
+    actual_target = exmemif.pcPlus4;
+    if (exmemif.beq || exmemif.bne || exmemif.blt || exmemif.bge || exmemif.jal || exmemif.jalr)begin
+      update = 1'b1;
+      if (exmemif.beq && exmemif.zero || exmemif.bne && !exmemif.zero || exmemif.blt && exmemif.aluOut || exmemif.bge && !exmemif.aluOut || exmemif.jal) begin
+        actual_target = exmemif.imm_pc;
+        taken = 1;
+      end
+      else if (exmemif.jalr) begin 
+        actual_target = exmemif.aluOut;
+        taken = 1;
+      end
     end
-    else if (exmemif.jalr) begin 
-      PCSrc = 2'b10;
-      taken = 1;
-    end
+    if (update && (exmemif.predicted_taken != taken)) mispredicted = 1'b1;
   end
+  always_comb begin
+    if (predicted_taken && btb_hit) next_imemaddr = btb_target;
+    else next_imemaddr = pcPlus4;
+  end
+  //pc mux for reference
+  // logic [31:0] next_imemaddr;
+  // always_comb begin
+  //   casez(PCSrc)
+  //     2'b00: next_imemaddr = pcPlus4;
+  //     2'b01: next_imemaddr = exmemif.imm_pc;
+  //     2'b10: next_imemaddr = exmemif.aluOut;
+  //     default: next_imemaddr = PC_INIT;
+  //   endcase
+  // end
 
   //ex/mem forwarding logic
   always_comb begin

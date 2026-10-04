@@ -6,7 +6,7 @@ main:
     li $5, 0
     sw $5, 0($0)
     beq $3, $4, equal
-    halt
+    halt #0x14
 
 equal:
     li $5, 1
