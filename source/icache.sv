@@ -13,9 +13,9 @@ logic [3:0] address_index;
 assign address_tag = dpif.imemaddr[31:6];
 assign address_index = dpif.imemaddr[5:2];
 
-logic [27:0] cache_tag [3:0];
-logic cache_valid [3:0];
-word_t cache_block [3:0];
+logic [27:0] cache_tag [16];
+logic cache_valid [16];
+word_t cache_block [16];
 
 logic cache_hit;
 logic [27:0] update_tag;
@@ -43,6 +43,8 @@ always_comb begin
   update_valid = '0;
   update_tag = '0;
   update = 0;
+  ccif.iREN = '0;
+  ccif.iaddr = '0;
   casez(state)
     IDLE: begin
       ccif.iREN = '0;
@@ -53,6 +55,7 @@ always_comb begin
       ccif.iaddr = dpif.imemaddr;
     end
     CACHE_WRITE: begin
+      ccif.iREN = '1;
       update_block = ccif.iload;
       update_valid = '1;
       update_tag = address_tag;
