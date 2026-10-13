@@ -75,7 +75,7 @@ module forwarding_unit_tb;
     exmemif.RegWrite = 1;
     testNum = 5;
     #(5ns);
-    assert (ForwardA == '0 && ForwardB == 2'b1) else $display("Test %d failed: $s", testNum, testname);
+    assert (ForwardA == '0 && ForwardB == 2'b1) e:   78.93 MHzlse $display("Test %d failed: $s", testNum, testname);
     testname = "Same register rsel2 and regwrite active MEM/WB";
     exmemif.wsel = '0;
     memwbif.wsel = 5'b00001;
