@@ -29,6 +29,10 @@ always_comb begin
       idex_flush = !data_wait;
       nop = 1'b1;
     end
+    if ((idexif.halt && !data_wait) || exmemif.halt || memwbif.halt || halt) begin
+      ifid_en = 1'b0;
+      idex_flush = 1'b1;
+    end
     if (taken) begin
       ifid_flush = '1;
       idex_flush = '1;

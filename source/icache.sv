@@ -2,7 +2,7 @@
 module icache (
   input logic CLK, nRST,
   datapath_cache_if dpif,
-  cache_control_if ccif
+  caches_if ccif
 );
 import cpu_types_pkg::*;
 
@@ -14,19 +14,17 @@ logic [3:0]  address_index;
 assign address_tag   = dpif.imemaddr[31:6];
 assign address_index = dpif.imemaddr[5:2];
 
-logic [25:0] cache_tag   [16];
-logic        cache_valid [16];
-word_t       cache_block [16];
+icache_frame cache [16];
 
 logic cache_hit;
 logic update;
-assign cache_hit = (address_tag == cache_tag[address_index]) && cache_valid[address_index];
+assign cache_hit = (address_tag == cache[address_index].tag) && cache[address_index].valid;
 
 always_comb begin
   next_state = state;
   case (state)
     IDLE: if (dpif.imemREN && !cache_hit && !dpif.halt) next_state = MISS;
-    MISS: if (dpif.halt || !ccif.iwait)                 next_state = IDLE;
+    MISS: if (dpif.halt || !ccif.iwait) next_state = IDLE;
     default: next_state = IDLE;
   endcase
 end
@@ -34,7 +32,7 @@ end
 always_comb begin
   ccif.iREN  = '0;
   ccif.iaddr = '0;
-  update     = 0;
+  update = 0;
   if (state == MISS) begin
     ccif.iREN  = '1;
     ccif.iaddr = dpif.imemaddr;
@@ -43,30 +41,28 @@ always_comb begin
 end
 
 always_comb begin
-  dpif.ihit     = '0;
+  dpif.ihit = '0;
   dpif.imemload = '0;
   if (dpif.imemREN && cache_hit && !dpif.halt) begin
-    dpif.ihit     = '1;
-    dpif.imemload = cache_block[address_index];
+    dpif.ihit = '1;
+    dpif.imemload = cache[address_index].data;
   end
 end
 
 always_ff @(posedge CLK, negedge nRST) begin
   if (!nRST) state <= IDLE;
-  else       state <= next_state;
+  else state <= next_state;
 end
 
 always_ff @(posedge CLK, negedge nRST) begin
   if (!nRST) begin
     for (int i = 0; i < 16; i++) begin
-      cache_valid[i] <= '0;
-      cache_block[i] <= '0;
-      cache_tag[i]   <= '0;
+      cache[i] <= '0;
     end
   end else if (update) begin
-    cache_valid[address_index] <= 1'b1;
-    cache_block[address_index] <= ccif.iload;
-    cache_tag[address_index]   <= address_tag;
+    cache[address_index].valid <= 1'b1;
+    cache[address_index].data  <= ccif.iload;
+    cache[address_index].tag   <= address_tag;
   end
 end
 
