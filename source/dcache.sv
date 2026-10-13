@@ -4,12 +4,16 @@ module dcache (
     datapath_cache_if dpif,
     cache_control_if ccif
 );
-typedef enum logic [2:0] 
+typedef enum logic [3:0] 
   { IDLE,
     READ0,
     READ1,
     WB0,
-    WB1
+    WB1,
+    FLUSH_CHECK,
+    FLUSH_WB0,
+    FLUSH_WB1,
+    HITCOUNT_WRITE
   } state_t;
 import cpu_types_pkg::*;
 state_t state, next_state;
@@ -35,11 +39,16 @@ assign hit1 = (address_tag == cache_tag[1][address_index] && cache_valid[1][addr
 assign hit = hit0 || hit1;
 assign hit_way = hit1;
 
+//flush
+logic [2:0] flush_index;
+logic flush_way;
+
 always_comb begin
   next_state = state;
   casez(state)
     IDLE: begin
-      if ((dpif.dmemREN || dpif.dmemWEN) && !hit && cache_dirty[lru[address_index]][address_index]) next_state = WB0;
+      if (dpif.halt) next_state = FLUSH_CHECK;
+      else if ((dpif.dmemREN || dpif.dmemWEN) && !hit && cache_dirty[lru[address_index]][address_index]) next_state = WB0;
       else if ((dpif.dmemREN || dpif.dmemWEN) && !hit && !cache_dirty[lru[address_index]][address_index]) next_state = READ0;
     end
     WB0: begin
@@ -54,11 +63,27 @@ always_comb begin
     READ1: begin
       if (!ccif.dwait) next_state = IDLE;
     end
+    FLUSH_CHECK: begin
+      if (valid[flush_way][flush_index]&&dirty[flush_way][flush_index])begin
+        next_state = FLUSH_WB0;
+      end
+      else begin
+        if (flush_index==3'd7&&flush_way==1'b1)next_state = HITCOUNT_WRITE;
+        else next_state = FLUSH_CHECK;
+      end
+    end
+    FLUSH_WB0: begin
+      if (!ccif.dwait) FLUSH_WB1;
+    end
+    FLUSH_WB1: if (!ccif.dwait) FLUSH_CHECK;
   endcase
 end
 always_comb begin
   next_lru   = lru[address_index];
-  next_dirty = cache_dirty[hit_way][address_index];
+  next_dirty = cache_dirty[hit_way][addrelse begin
+        if (flush_index==3'd7&&flush_way==1'b1)next_state = HITCOUNT_WRITE;
+        else next_state = FLUSH_CHECK;
+      endess_index];
   next_word  = cache_word[hit_way*2 + block_offset][address_index];
   dpif.dhit = '0;
   dpif.dmemload = '0;
@@ -103,6 +128,21 @@ always_comb begin
       ccif.dREN = 1;
       ccif.daddr = {address_tag, address_index, 3'b100};
     end
+    FLUSH_WB0: begin
+      dWEN = 1'b1;
+      daddr = {cache_tag[flush_way][flush_index],flush_index,3'b0};
+      dstore = word[flush_way*2][flush_index];
+    end
+    FLUSH_WB1: begin
+      dWEN = 1'b1;
+      daddr = {cache_tag[flush_way][flush_index],flush_index,3'b100};
+      dstore = word[flush_way*2+1][flush_index];
+    end
+    HITCOUNT_WRITE: begin
+      dWEN = 1'b1;
+      daddr = 32'h3100;
+      dstore = hit_count;
+    end
   endcase
 end
 
@@ -126,6 +166,33 @@ always_ff @(posedge CLK or negedge nRST) begin
     end
   end else begin
     state <= next_state;
+
+    if (state == FLUSH_CHECK) begin
+      if (!(valid[flush_way][flush_index])&&dirty[flush_way][flush_index])begin
+        valid[flush_way][flush_index] <= 1'b0;
+        dirty[flush_way][flush_index] <= 1'b0;
+        if (!(flush_index==3'd7&&flush_way==1'b1))begin
+          if (flush_way==1'b0) flush_way <= 1'b1;
+          else begin
+            flush_way <= 1'b0;
+            flush_index <= flush_index + 3'd1;
+          end
+        end
+      end
+    end
+    if (state == FLUSH_WB1 && !ccif.dwait)begin
+      valid[flush_way][flush_index] <= 1'b0;
+      dirty[flush_way][flush_index] <= 1'b0;
+      if (!(flush_index==3'd7&&flush_way==1'b1))begin
+        if (flush_way==1'b0)begin
+          flush_way <= 1'b1;
+        end
+        else begin
+          flush_way <= 1'b0;
+          flush_index <= flush_index + 3'd1;
+        end
+      end
+    end
 
     if (state == IDLE && (dpif.dmemREN || dpif.dmemWEN) && !hit) miss_flag <= 1;
     else if (dpif.dhit) miss_flag <= 0;
