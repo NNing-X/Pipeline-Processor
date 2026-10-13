@@ -166,7 +166,8 @@ always_ff @(posedge CLK or negedge nRST) begin
     end
   end else begin
     state <= next_state;
-
+    if (state == FLUSH_WB0 && !ccif.dwait)
+    $display("flush write %h = %h", ccif.daddr, ccif.dstore);
     if (state == FLUSH_CHECK) begin
         if (!(cache[flush_index].frame[flush_way].valid&&cache[flush_index].frame[flush_way].dirty))begin
         cache[flush_index].frame[flush_way].valid <= 1'b0;

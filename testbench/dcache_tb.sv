@@ -15,18 +15,13 @@ module dcache_tb;
 
   dcache DUT(CLK, nRST, dpif, ccif);
 
-
-  // ============================================================
-  // Memory finishes one READ
-  // ============================================================
-  task automatic mem_read(
+  task mem_read(
     input word_t addr,
     input word_t data
   );
     assert(ccif.dREN && ccif.daddr == addr)
       else $error("READ expected %h, got %h", addr, ccif.daddr);
 
-    // memory completes at negedge
     ccif.dload = data;
     ccif.dwait = 0;
 
@@ -34,16 +29,12 @@ module dcache_tb;
     ccif.dwait = 1;
   endtask
 
-
-  // ============================================================
-  // Memory finishes one WRITE
-  // ============================================================
-  task automatic mem_write(
+  task mem_write(
     input word_t addr,
     input word_t data
   );
     assert(ccif.dWEN &&
-           ccif.daddr  == addr &&
+           ccif.daddr == addr &&
            ccif.dstore == data)
       else $error("WRITE error at %h", addr);
 
@@ -54,39 +45,25 @@ module dcache_tb;
   endtask
 
 
-  // ============================================================
-  // CPU load request
-  // ============================================================
-  task automatic load(input word_t addr);
+  task load(input word_t addr);
     @(negedge CLK);
     dpif.dmemaddr = addr;
     dpif.dmemREN  = 1;
     dpif.dmemWEN  = 0;
   endtask
 
-
-  // ============================================================
-  // End CPU request
-  // ============================================================
-  task automatic done();
+  task done();
     @(negedge CLK);
     dpif.dmemREN = 0;
     dpif.dmemWEN = 0;
   endtask
 
-
-
   initial begin
-
-    // ==========================================================
-    // INITIALIZE / RESET
-    // ==========================================================
     dpif.dmemREN   = 0;
     dpif.dmemWEN   = 0;
     dpif.dmemaddr  = 0;
     dpif.dmemstore = 0;
     dpif.halt      = 0;
-
     ccif.dwait = 1;
     ccif.dload = 0;
 
