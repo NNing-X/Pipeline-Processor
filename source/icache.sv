@@ -8,17 +8,17 @@ typedef enum logic [1:0] {IDLE, MISS, CACHE_WRITE} state_t;
 state_t state, next_state;
 import cpu_types_pkg::*;
 
-logic [27:0] address_tag;
+logic [25:0] address_tag;
 logic [3:0] address_index;
 assign address_tag = dpif.imemaddr[31:6];
 assign address_index = dpif.imemaddr[5:2];
 
-logic [27:0] cache_tag [16];
+logic [25:0] cache_tag [16];
 logic cache_valid [16];
 word_t cache_block [16];
 
 logic cache_hit;
-logic [27:0] update_tag;
+logic [25:0] update_tag;
 word_t update_block;
 logic update_valid, update;
 assign cache_hit = ((address_tag == cache_tag [address_index])&& cache_valid[address_index]);
@@ -30,7 +30,7 @@ always_comb begin
     end 
     MISS: begin
       if (dpif.halt) next_state = IDLE;
-      else if (ccif.iwait) next_state = CACHE_WRITE; 
+      else if (!ccif.iwait) next_state = CACHE_WRITE; 
     end
     CACHE_WRITE: begin
       next_state = IDLE;
@@ -51,7 +51,12 @@ always_comb begin
       ccif.iaddr = '0;
     end
     MISS: begin
-      ccif.iREN = '1;
+      ccif.iR7:0] address_tag;
+logic [3:0] address_index;
+assign address_tag = dpif.imemaddr[31:6];
+assign address_index = dpif.imemaddr[5:2];
+
+logic [27EN = '1;
       ccif.iaddr = dpif.imemaddr;
     end
     CACHE_WRITE: begin
