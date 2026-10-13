@@ -5,55 +5,111 @@
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # vsim -coverage -suppress 12110 -c -do "run -all; exit;" "+define+USE_VIVADO" -L unisim -wlf system_tb.wlf work.system_tb glbl 
-# Start time: 21:08:10 on Oct 03,2026
-# ** Note: (vsim-8009) Loading existing optimized design _opt
-# //  Questa Sim-64
-# //  Version 2021.4 linux_x86_64 Oct 13 2021
-# //
-# //  Copyright 1991-2021 Mentor Graphics Corporation
-# //  All Rights Reserved.
-# //
-# //  QuestaSim and its associated documentation contain trade
-# //  secrets and commercial or financial information that are the property of
-# //  Mentor Graphics Corporation and are privileged, confidential,
-# //  and exempt from disclosure under the Freedom of Information Act,
-# //  5 U.S.C. Section 552. Furthermore, this information
-# //  is prohibited from disclosure under the Trade Secrets Act,
-# //  18 U.S.C. Section 1905.
-# //
-# Loading sv_std.std
-# Loading work.system_tb(fast)
-# Loading work.cpu_types_pkg(fast)
-# Loading work.system_if(fast__1)
-# Loading work.test(fast)
-# Loading work.system(fast)
-# Loading work.cpu_ram_if(fast__1)
-# Loading work.pipeline(fast)
-# Loading work.datapath_cache_if(fast__1)
-# Loading work.caches_if(fast__1)
-# Loading work.cache_control_if(fast__1)
-# Loading work.datapath(fast)
-# Loading work.register_file_if(fast__1)
-# Loading work.alu_if(fast__1)
-# Loading work.if_id_if(fast__1)
-# Loading work.id_ex_if(fast__1)
-# Loading work.ex_mem_if(fast__1)
-# Loading work.mem_wb_if(fast__1)
-# Loading work.register_file(fast)
-# Loading work.alu(fast)
-# Loading work.pipeline_control_unit(fast)
-# Loading work.hazard_unit(fast)
-# Loading work.forwarding_unit(fast)
-# Loading work.caches(fast)
-# Loading work.memory_control(fast)
-# Loading work.ram(fast)
-# Loading work.glbl(fast)
-# run -all
-# 
-# Starting RTL Processor.
-# 
-# Halted at 960 time and ran for         23 cycles.
-# Starting memory dump via debug port.
-# Finished memory dump via debug port.
-# End time: 21:08:11 on Oct 03,2026, Elapsed time: 0:00:01
-# Errors: 0, Warnings: 0
+# Start time: 17:37:27 on Oct 13,2026
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Error (suppressible): source/system.sv(46): (vopt-2732) Module parameter 'PC0' not found for override.
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'CPUCLK_BUFG' not found in module 'datapath' (1st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'D' not found in module 'datapath' (2nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'MemRead_reg__0_0' not found in module 'datapath' (3rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'Q' not found in module 'datapath' (4th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'S' not found in module 'datapath' (5th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'WEA' not found in module 'datapath' (6th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[0] ' not found in module 'datapath' (7th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[10] ' not found in module 'datapath' (8th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[11] ' not found in module 'datapath' (9th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[12] ' not found in module 'datapath' (10th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[13] ' not found in module 'datapath' (11th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[14] ' not found in module 'datapath' (12th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[15] ' not found in module 'datapath' (13th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[16] ' not found in module 'datapath' (14th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[17] ' not found in module 'datapath' (15th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[18] ' not found in module 'datapath' (16th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[19] ' not found in module 'datapath' (17th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[1] ' not found in module 'datapath' (18th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[20] ' not found in module 'datapath' (19th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[21] ' not found in module 'datapath' (20th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[22] ' not found in module 'datapath' (21st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[23] ' not found in module 'datapath' (22nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[24] ' not found in module 'datapath' (23rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[25] ' not found in module 'datapath' (24th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[26] ' not found in module 'datapath' (25th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[27] ' not found in module 'datapath' (26th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[28] ' not found in module 'datapath' (27th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[29] ' not found in module 'datapath' (28th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[2] ' not found in module 'datapath' (29th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[30] ' not found in module 'datapath' (30th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[31] ' not found in module 'datapath' (31st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[31]_0 ' not found in module 'datapath' (32nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[3] ' not found in module 'datapath' (33rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[4] ' not found in module 'datapath' (34th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[5] ' not found in module 'datapath' (35th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[6] ' not found in module 'datapath' (36th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[7] ' not found in module 'datapath' (37th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[8] ' not found in module 'datapath' (38th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\addr_reg[9] ' not found in module 'datapath' (39th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_0 ' not found in module 'datapath' (40th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_1 ' not found in module 'datapath' (41st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_10 ' not found in module 'datapath' (42nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_11 ' not found in module 'datapath' (43rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_12 ' not found in module 'datapath' (44th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_13 ' not found in module 'datapath' (45th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_14 ' not found in module 'datapath' (46th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_15 ' not found in module 'datapath' (47th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_16 ' not found in module 'datapath' (48th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_2 ' not found in module 'datapath' (49th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_3 ' not found in module 'datapath' (50th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_4 ' not found in module 'datapath' (51st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_5 ' not found in module 'datapath' (52nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_6 ' not found in module 'datapath' (53rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_7 ' not found in module 'datapath' (54th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_8 ' not found in module 'datapath' (55th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemWEN_reg_9 ' not found in module 'datapath' (56th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\dpif\.dmemload ' not found in module 'datapath' (57th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\en_reg[1] ' not found in module 'datapath' (58th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'halt_reg__1_0' not found in module 'datapath' (59th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_0' not found in module 'datapath' (60th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_0_0' not found in module 'datapath' (61st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_1' not found in module 'datapath' (62nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_10' not found in module 'datapath' (63rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_10_0' not found in module 'datapath' (64th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_11' not found in module 'datapath' (65th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_11_0' not found in module 'datapath' (66th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_12' not found in module 'datapath' (67th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_12_0' not found in module 'datapath' (68th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_13' not found in module 'datapath' (69th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_13_0' not found in module 'datapath' (70th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_14' not found in module 'datapath' (71st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_14_0' not found in module 'datapath' (72nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_15' not found in module 'datapath' (73rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_15_0' not found in module 'datapath' (74th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_15_1' not found in module 'datapath' (75th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_15_2' not found in module 'datapath' (76th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_15_3' not found in module 'datapath' (77th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_1_0' not found in module 'datapath' (78th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_2' not found in module 'datapath' (79th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_2_0' not found in module 'datapath' (80th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_3' not found in module 'datapath' (81st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_3_0' not found in module 'datapath' (82nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_4' not found in module 'datapath' (83rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_4_0' not found in module 'datapath' (84th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_5' not found in module 'datapath' (85th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_5_0' not found in module 'datapath' (86th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_6' not found in module 'datapath' (87th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_6_0' not found in module 'datapath' (88th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_7' not found in module 'datapath' (89th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_7_0' not found in module 'datapath' (90th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_8' not found in module 'datapath' (91st connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_8_0' not found in module 'datapath' (92nd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_9' not found in module 'datapath' (93rd connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'mem_reg_9_0' not found in module 'datapath' (94th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'nRST_IBUF' not found in module 'datapath' (96th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'next_state' not found in module 'datapath' (97th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'q' not found in module 'datapath' (98th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port '\ramif\.ramstore ' not found in module 'datapath' (99th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'state_reg_0' not found in module 'datapath' (100th connection).
+# ** Error (suppressible): mapped/system.sv(18822): (vopt-2912) Port 'wren' not found in module 'datapath' (101st connection).
+# Optimization failed
+# ** Note: (vsim-12126) Error and warning message counts have been restored: Errors=101, Warnings=0.
+# Error loading design
+# End time: 17:37:29 on Oct 13,2026, Elapsed time: 0:00:02
+# Errors: 101, Warnings: 0
