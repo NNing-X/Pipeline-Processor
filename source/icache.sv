@@ -11,7 +11,7 @@ state_t state, next_state;
 
 logic [25:0] address_tag;
 logic [3:0]  address_index;
-assign address_tag   = dpif.imemaddr[31:6];
+assign address_tag = dpif.imemaddr[31:6];
 assign address_index = dpif.imemaddr[5:2];
 
 icache_frame cache [16];
@@ -61,8 +61,8 @@ always_ff @(posedge CLK, negedge nRST) begin
     end
   end else if (update) begin
     cache[address_index].valid <= 1'b1;
-    cache[address_index].data  <= ccif.iload;
-    cache[address_index].tag   <= address_tag;
+    cache[address_index].data <= ccif.iload;
+    cache[address_index].tag <= address_tag;
   end
 end
 
