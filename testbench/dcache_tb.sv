@@ -56,8 +56,8 @@ module dcache_tb;
     assert(dpif.dhit == 1) else $error("load didn't hit after read1");
     assert(dpif.dmemload==32'hBBBB_BBBB)else $error("wrong load data");
     dpif.dmemREN = 1'b0;
-    // store hit
-
+    // store miss
+    
     $finish;
   end
 endmodule
