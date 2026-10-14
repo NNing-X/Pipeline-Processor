@@ -1,0 +1,45 @@
+Execution Data Sweep Report File 2026_10_14_07_17_PM
+Single-core mode enabled.
+Using assembly file: asmFiles/mergesort.asm
+
+________________________________________________________________________________________________________________________
+LAT = 0
+
+CLK Cycles:
+# Halted at 391520 time and ran for       9787 cycles.
+
+Timing Summary:
+  - Clock: MAIN            | Target:  200.00 MHz | Fmax:  136.30 MHz
+  - Clock: CPUCLK          | Target:  100.00 MHz | Fmax:   71.75 MHz
+
+________________________________________________________________________________________________________________________
+LAT = 2
+
+CLK Cycles:
+# Halted at 411240 time and ran for      10280 cycles.
+
+Timing Summary:
+  - Clock: MAIN            | Target:  200.00 MHz | Fmax:  126.63 MHz
+  - Clock: CPUCLK          | Target:  100.00 MHz | Fmax:   78.93 MHz
+
+________________________________________________________________________________________________________________________
+LAT = 6
+
+CLK Cycles:
+# Halted at 459640 time and ran for      11490 cycles.
+
+Timing Summary:
+  - Clock: MAIN            | Target:  200.00 MHz | Fmax:  126.63 MHz
+  - Clock: CPUCLK          | Target:  100.00 MHz | Fmax:   78.93 MHz
+(copied from LAT=2)
+
+________________________________________________________________________________________________________________________
+LAT = 10
+
+CLK Cycles:
+# Halted at 509720 time and ran for      12742 cycles.
+
+Timing Summary:
+  - Clock: MAIN            | Target:  200.00 MHz | Fmax:  126.63 MHz
+  - Clock: CPUCLK          | Target:  100.00 MHz | Fmax:   78.93 MHz
+(copied from LAT=2)
