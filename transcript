@@ -4,9 +4,10 @@
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# vsim -coverage -suppress 12110 -c -do "run -all; exit;" "+define+USE_VIVADO" -L unisim -wlf system_tb.wlf work.system_tb glbl 
-# Start time: 18:57:22 on Oct 13,2026
-# ** Note: (vsim-8009) Loading existing optimized design _opt
+# vsim -coverage -suppress 12110 -c -do "run -all; exit;" "+define+USE_VIVADO" -L unisim -wlf dcache_tb.wlf work.dcache_tb glbl 
+# Start time: 19:06:52 on Oct 13,2026
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 1 FSM in module "dcache(fast)".
 # //  Questa Sim-64
 # //  Version 2021.4 linux_x86_64 Oct 13 2021
 # //
@@ -22,45 +23,21 @@
 # //  18 U.S.C. Section 1905.
 # //
 # Loading sv_std.std
-# Loading work.system_tb(fast)
 # Loading work.cpu_types_pkg(fast)
-# Loading work.system_if(fast__1)
-# Loading work.test(fast)
-# Loading work.system(fast)
-# Loading work.cpu_ram_if(fast__1)
-# Loading work.pipeline(fast)
+# Loading work.dcache_tb(fast)
 # Loading work.datapath_cache_if(fast__1)
 # Loading work.caches_if(fast__1)
-# Loading work.cache_control_if(fast__1)
-# Loading work.datapath(fast)
-# Loading work.register_file_if(fast__1)
-# Loading work.alu_if(fast__1)
-# Loading work.if_id_if(fast__1)
-# Loading work.id_ex_if(fast__1)
-# Loading work.ex_mem_if(fast__1)
-# Loading work.mem_wb_if(fast__1)
-# Loading work.register_file(fast)
-# Loading work.alu(fast)
-# Loading work.pipeline_control_unit(fast)
-# Loading work.hazard_unit(fast)
-# Loading work.forwarding_unit(fast)
-# Loading work.caches(fast)
-# Loading work.icache(fast)
 # Loading work.dcache(fast)
-# Loading work.memory_control(fast)
-# Loading work.ram(fast)
 # Loading work.glbl(fast)
 # run -all
-# 
-# Starting RTL Processor.
-# 
-# flush write 00000500 = 0000029a
-# flush write 00000508 = 0000039a
-# flush write 00000510 = 0002a40a
-# flush write 00000518 = 0074041a
-# flush write 00000520 = 0082829a
-# Halted at 5440 time and ran for        135 cycles.
-# Starting memory dump via debug port.
-# Finished memory dump via debug port.
-# End time: 18:57:23 on Oct 13,2026, Elapsed time: 0:00:01
+# TEST 1 PASS
+# TEST 2 PASS
+# TEST 3 PASS
+# flush write 00001080 = deadbeef
+# Hit count = 3
+# TEST 4 PASS
+# =========================
+#  ALL DCACHE TESTS PASSED 
+# =========================
+# End time: 19:06:53 on Oct 13,2026, Elapsed time: 0:00:01
 # Errors: 0, Warnings: 0

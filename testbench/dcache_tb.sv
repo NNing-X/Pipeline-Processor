@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 `include "cpu_types_pkg.vh"
 
 module dcache_tb;
@@ -11,7 +12,7 @@ module dcache_tb;
   always #(PERIOD/2) CLK++;
 
   datapath_cache_if dpif();
-  cache_control_if  ccif();
+  caches_if ccif();
 
   dcache DUT(CLK, nRST, dpif, ccif);
 
@@ -20,7 +21,7 @@ module dcache_tb;
     input word_t data
   );
     assert(ccif.dREN && ccif.daddr == addr)
-      else $error("READ expected %h, got %h", addr, ccif.daddr);
+      else $error("READ error");
 
     ccif.dload = data;
     ccif.dwait = 0;
@@ -36,7 +37,7 @@ module dcache_tb;
     assert(ccif.dWEN &&
            ccif.daddr == addr &&
            ccif.dstore == data)
-      else $error("WRITE error at %h", addr);
+      else $error("WRITE error");
 
     ccif.dwait = 0;
 
@@ -71,15 +72,7 @@ module dcache_tb;
     repeat(2) @(negedge CLK);
     nRST = 1;
 
-
-    // ==========================================================
-    // TEST 1: LOAD MISS -> FILL -> HIT
-    //
-    // 0x1004 belongs to block:
-    // word0 = 0x1000
-    // word1 = 0x1004
-    // ==========================================================
-
+    //load miss
     load(32'h1004);
 
     assert(!dpif.dhit);
@@ -90,7 +83,7 @@ module dcache_tb;
     mem_read(32'h1000, 32'hAAAA_AAAA); // READ0
     mem_read(32'h1004, 32'hBBBB_BBBB); // READ1
 
-    #1;
+    // #1;
     assert(dpif.dhit);
     assert(dpif.dmemload == 32'hBBBB_BBBB);
 
@@ -99,13 +92,7 @@ module dcache_tb;
     $display("TEST 1 PASS");
 
 
-    // ==========================================================
-    // TEST 2: STORE HIT
-    //
-    // Change cached 0x1004.
-    // Should NOT write RAM.
-    // ==========================================================
-
+    //store hit
     @(negedge CLK);
 
     dpif.dmemaddr  = 32'h1004;
@@ -117,10 +104,8 @@ module dcache_tb;
     assert(dpif.dhit);
     assert(!ccif.dWEN);
 
-    // allow store to enter cache
     @(negedge CLK);
     dpif.dmemWEN = 0;
-
 
     // Read back
     load(32'h1004);
@@ -242,14 +227,8 @@ module dcache_tb;
 
     $display("TEST 4 PASS");
 
-
-    // ==========================================================
-    // FINISH
-    // ==========================================================
-
-    $display("=========================");
     $display(" ALL DCACHE TESTS PASSED ");
-    $display("=========================");
+ 
 
     $finish;
 
