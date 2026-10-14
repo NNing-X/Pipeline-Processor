@@ -1,22 +1,7 @@
-processing file asmFiles/associativity.asm (1 of 1)
---- memsim.hex	2026-10-13 18:45:38.539139639 -0400
-+++ memcpu.hex	2026-10-13 18:45:38.536139672 -0400
-@@ -28,4 +28,5 @@
- :0401460000000111A3
- :040147000000022290
- :04014800000003337D
-+:040C400000000006AA
- :00000001FF
-processing file asmFiles/associativity.asm (1 of 1)
-processing file asmFiles/ihit_dhit_same_cycle.asm (1 of 1)
---- memsim.hex	2026-10-13 18:49:30.543548589 -0400
-+++ memcpu.hex	2026-10-13 18:49:30.538548645 -0400
-@@ -7,6 +7,5 @@
- :040006000082A023B1
- :04000700FE6398E319
- :04000800FFFFFFFFF8
--:0401000000000005F6
- :040C400000000009A7
- :00000001FF
-processing file asmFiles/ihit_dhit_same_cycle.asm (1 of 1)
-processing file asmFiles/ihit_before_dhit.asm (1 of 1)
+processing file asmFiles/fib.asm (1 of 3)
+processing file asmFiles/fib.asm (1 of 3)
+processing file asmFiles/mult.asm (2 of 3)
+processing file asmFiles/search.asm (3 of 3)
+processing file asmFiles/fib.asm (1 of 3)
+processing file asmFiles/mult.asm (2 of 3)
+processing file asmFiles/search.asm (3 of 3)

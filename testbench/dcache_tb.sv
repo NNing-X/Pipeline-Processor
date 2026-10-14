@@ -57,7 +57,8 @@ module dcache_tb;
     assert(dpif.dmemload==32'hBBBB_BBBB)else $error("wrong load data");
     dpif.dmemREN = 1'b0;
     // store miss
-    
+    @(negedge CLK);
+
     $finish;
   end
 endmodule
