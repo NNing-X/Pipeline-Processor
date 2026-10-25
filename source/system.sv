@@ -43,8 +43,8 @@ module system (
 
   // processor
   //singlecycle #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
-  pipeline    #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
-  //multicore   #(.PC0('h0), .PC1('h200)) CPU (CLK, nRST, halt, prif);
+  //pipeline    #(.PC0('h0))              CPU (CPUCLK, nRST, halt, prif);
+  multicore   #(.PC0('h0), .PC1('h200)) CPU (CPUCLK, nRST, halt, prif);
 
   // memory
   ram RAM (
