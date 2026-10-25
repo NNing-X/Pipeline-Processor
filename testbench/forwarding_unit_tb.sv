@@ -40,7 +40,7 @@ module forwarding_unit_tb;
     assert (ForwardA == '0 && ForwardB == '0) else $display("Test %d failed: $s", testNum, testname);        
     testname = "Same register but regwrite not active MEM/WB";
     exmemif.wsel = '0;
-    memwbif.wsel = 5'b00001;
+    memwbif.wsel = 5'b00001;s==3
     testNum = 1;
     #(5ns);
     assert (ForwardA == '0 && ForwardB == '0) else $display("Test %d failed: $s", testNum, testname); 
