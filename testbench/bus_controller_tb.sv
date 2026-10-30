@@ -18,15 +18,34 @@ module bus_controller_tb;
   caches_if ccif0();
   caches_if ccif1();
   cache_control_if cif(ccif0, ccif1);
-  bus2mem_if bmif();
-
+  cpu_ram_if ramif();
   //dut
-  bus_controller DUT (CLK, nRST, cif, bmif);
+  bus_controller DUT (CLK, nRST, cif);
+  logic [13:0]               dbg_addr;
+  logic [31:0]               dbg_data_out;
+  logic halt;
+  assign halt = 0;
+  assign dbg_addr = '0;
+  ram MEM (CLK, nRST, halt, ramif, dbg_addr, dbg_data_out);
 
+`include "cpu_types_pkg.vh"
+
+  logic               ramREN, ramWEN;
+  word_t              ramaddr, ramstore, ramload;
+  ramstate_t          ramstate;
+
+  // cpu signals
+  logic               memREN, memWEN;
+  word_t              memaddr, memstore;
+
+  assign ramif.ramREN = cif.ramREN;
+  assign ramif.ramWEN = cif.ramWEN;
+  assign ramif.ramaddr = cif.ramaddr;
+  assign cif.ramstate = ramif.ramstate;
+  assign ramif.ramstore = cif.ramstore;
+  assign cif.ramload = ramif.ramload;
   initial begin
     nRST = '1;
-    bmif.memload = '0;
-    bmif.memstate = FREE;
 
     ccif0.dREN = '0;
     ccif1.dREN = '0;
@@ -56,17 +75,17 @@ module bus_controller_tb;
     ccif0.iaddr = 32'hFFFF_FFFF;
 
     wait (DUT.state == DUT.IFETCH);
-    bmif.memload = 32'hABCD_ABCD;
+   // cif.ramload = 32'hABCD_ABCD;
     #1;
-    assert(bmif.memaddr == cif.iaddr[0]) else $display("Failed");
-    assert(bmif.memREN == 1) else $display("Failed1");
-    assert(cif.iwait[0] == (bmif.memstate != ACCESS)) else $display("Failed2");
-    assert(cif.iload[0] == bmif.memload) else $display("Failed3");
+    assert(cif.ramaddr == cif.iaddr[0]) else $display("Failed");
+    assert(cif.ramREN == 1) else $display("Failed1");
+   assert(cif.iwait[0] == (cif.ramstate != ACCESS)) else $display("Failed2");
+    assert(cif.iload[0] == cif.ramload) else $display("Failed3");
 
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     ccif0.iREN = '0;
 
     @(negedge CLK);
@@ -78,19 +97,19 @@ module bus_controller_tb;
 
     wait (DUT.state == DUT.WB0);
     #1;
-    assert(bmif.memaddr == cif.daddr[0]) else $display("Failed WBaddr");
-    assert(bmif.memWEN == '1) else $display("failedWB_memWEN");
-    assert(bmif.memstore == cif.dstore[0]) else $display("failed WB dstore");
-    assert(cif.dwait[0] == (bmif.memstate != ACCESS)) else $display("failed WB memstate");
+    assert(cif.ramaddr == cif.daddr[0]) else $display("Failed WBaddr");
+    assert(cif.ramWEN == '1) else $display("failedWB_memWEN");
+    assert(cif.ramstore == cif.dstore[0]) else $display("failed WB dstore");
+    assert(cif.dwait[0] == (cif.ramstate != ACCESS)) else $display("failed WB memstate");
 
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     ccif0.dWEN = '0;
 
     @(negedge CLK);
@@ -111,23 +130,23 @@ module bus_controller_tb;
 
     wait (DUT.state == DUT.C2C0);
     #1;
-    assert(bmif.memaddr == cif.daddr[1]) else $display("failed c2c1");
-    assert(bmif.memWEN == '1) else $display("failed c2c2");
-    assert(bmif.memstore == cif.dstore[0]) else $display("failed c2c3");
-    assert(cif.dwait[1] == (bmif.memstate != ACCESS)) else $display("failed c2c4");
+    assert(cif.ramaddr == cif.daddr[1]) else $display("failed c2c1");
+    assert(cif.ramWEN == '1) else $display("failed c2c2");
+    assert(cif.ramstore == cif.dstore[0]) else $display("failed c2c3");
+    assert(cif.dwait[1] == (cif.ramstate != ACCESS)) else $display("failed c2c4");
     assert(cif.dload[1] == cif.dstore[0]) else $display("failed c2c dload");
     assert(cif.ccwait[0] == '1) else $display("failed c2c ccwait");
     assert(cif.ccsnoopaddr[0] == cif.daddr[1]) else $display("failed c2c snoopaddr");
     assert(cif.ccinv[0] == cif.ccwrite[1]) else $display("failed c2c inv");
 
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     ccif1.dREN = '0;
 
     @(negedge CLK);
@@ -141,25 +160,25 @@ module bus_controller_tb;
     #1;
 
     //mem
-    bmif.memload = 32'h4444_4444;
+   // cif.ramload = 32'h4444_4444;
 
     wait (DUT.state == DUT.MEM0);
     #1;
-    assert(bmif.memaddr == cif.daddr[0]) else $display("Failed mem0");
-    assert(bmif.memREN == 1) else $display("Failed mem 0");
-    assert(cif.dwait[0] == (bmif.memstate != ACCESS)) else $display("failed mem0");
-    assert(cif.dload[0] == bmif.memload) else $display("Failed mem0");
+    assert(cif.ramaddr == cif.daddr[0]) else $display("Failed mem0");
+    assert(cif.ramREN == 1) else $display("Failed mem 0");
+    assert(cif.dwait[0] == (cif.ramstate != ACCESS)) else $display("failed mem0");
+    assert(cif.dload[0] == cif.ramload) else $display("Failed mem0");
     assert(cif.ccwait == 0) else $display("Failed mem0");
     assert(cif.ccinv == 0) else $display("Failed mem0");
 
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     @(negedge CLK);
-    bmif.memstate = ACCESS;
+
     @(negedge CLK);
-    bmif.memstate = FREE;
+
     ccif0.dREN = '0;
 
     $finish;

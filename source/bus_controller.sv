@@ -1,8 +1,7 @@
 `include "cpu_types_pkg.vh"
 module bus_controller(
   input logic CLK, nRST,
-  cache_control_if cif,
-  bus2mem_if bmif
+  cache_control_if cif
 );
 	import cpu_types_pkg::*;
 	typedef enum logic [3:0] {IDLE, ARBITRATE, IFETCH, WB0, WB1, SNOOP, C2C0, C2C1, MEM0, MEM1} state_t;
@@ -19,17 +18,17 @@ module bus_controller(
 				else if (cif.dREN[access]) next_state = SNOOP;
 				else if (cif.iREN[access]) next_state = IFETCH;
 			end
-			WB0: if (bmif.memstate == ACCESS) next_state = WB1;
-			WB1: if (bmif.memstate == ACCESS) next_state = IDLE;
-			IFETCH: if (bmif.memstate == ACCESS) next_state = IDLE;
+			WB0: if (cif.ramstate == ACCESS) next_state = WB1;
+			WB1: if (cif.ramstate == ACCESS) next_state = IDLE;
+			IFETCH: if (cif.ramstate == ACCESS) next_state = IDLE;
 			SNOOP: begin
 				if (cif.ccwrite[!access]) next_state = C2C0;
 				else next_state = MEM0;
 			end
-			C2C0: if (bmif.memstate == ACCESS) next_state = C2C1;
-			C2C1: if (bmif.memstate == ACCESS) next_state = IDLE;
-			MEM0: if (bmif.memstate == ACCESS) next_state = MEM1;
-			MEM1: if (bmif.memstate == ACCESS) next_state = IDLE;
+			C2C0: if (cif.ramstate == ACCESS) next_state = C2C1;
+			C2C1: if (cif.ramstate == ACCESS) next_state = IDLE;
+			MEM0: if (cif.ramstate == ACCESS) next_state = MEM1;
+			MEM1: if (cif.ramstate == ACCESS) next_state = IDLE;
 			default: next_state = IDLE;
 		endcase
 	end
@@ -40,10 +39,10 @@ module bus_controller(
 		next_arbiter = arbiter;
 		casez(state)
 			IDLE: begin
-				bmif.memaddr = '0;
-				bmif.memWEN = '0;
-				bmif.memREN = '0;
-				bmif.memstore = '0;
+				cif.ramaddr = '0;
+				cif.ramWEN = '0;
+				cif.ramREN = '0;
+				cif.ramstore = '0;
 				cif.dwait = '0;
 				cif.dload = '0;
 				cif.ccwait = '0;
@@ -78,22 +77,22 @@ module bus_controller(
 				end
 			end
 			WB0: begin
-				bmif.memaddr = cif.daddr[access];
-				bmif.memWEN = '1;
-				bmif.memstore = cif.dstore[access];
-				cif.dwait[access] = (bmif.memstate != ACCESS);
+				cif.ramaddr = cif.daddr[access];
+				cif.ramWEN = '1;
+				cif.ramstore = cif.dstore[access];
+				cif.dwait[access] = (cif.ramstate != ACCESS);
 			end
 			WB1: begin
-				bmif.memaddr = cif.daddr[access];
-				bmif.memWEN = '1;
-				bmif.memstore = cif.dstore[access];
-				cif.dwait[access] = (bmif.memstate != ACCESS);
+				cif.ramaddr = cif.daddr[access];
+				cif.ramWEN = '1;
+				cif.ramstore = cif.dstore[access];
+				cif.dwait[access] = (cif.ramstate != ACCESS);
 			end
 			IFETCH: begin
-				bmif.memaddr = cif.iaddr[access];
-				bmif.memREN = '1;
-				cif.iwait[access] = (bmif.memstate != ACCESS);
-				cif.iload[access] = bmif.memload;
+				cif.ramaddr = cif.iaddr[access];
+				cif.ramREN = '1;
+				cif.iwait[access] = (cif.ramstate != ACCESS);
+				cif.iload[access] = cif.ramload;
 			end
 			SNOOP: begin
 				cif.ccwait[!access] = '1;
@@ -101,38 +100,38 @@ module bus_controller(
 				cif.ccinv[!access] = cif.ccwrite[access];
 			end
 			C2C0: begin
-				bmif.memaddr = cif.daddr[access];
-				bmif.memWEN = '1;
-				bmif.memstore = cif.dstore[!access];
-				cif.dwait[access] = (bmif.memstate != ACCESS);
+				cif.ramaddr = cif.daddr[access];
+				cif.ramWEN = '1;
+				cif.ramstore = cif.dstore[!access];
+				cif.dwait[access] = (cif.ramstate != ACCESS);
 				cif.dload[access] = cif.dstore[!access];
 				cif.ccwait[!access] = '1;
 				cif.ccsnoopaddr[!access] = cif.daddr[access];
 				cif.ccinv[!access] = cif.ccwrite[access];
 			end
 			C2C1: begin
-				bmif.memaddr = cif.daddr[access];
-				bmif.memWEN = '1;
-				bmif.memstore = cif.dstore[!access];
-				cif.dwait[access] = (bmif.memstate != ACCESS);
+				cif.ramaddr = cif.daddr[access];
+				cif.ramWEN = '1;
+				cif.ramstore = cif.dstore[!access];
+				cif.dwait[access] = (cif.ramstate != ACCESS);
 				cif.dload[access] = cif.dstore[!access];
 				cif.ccwait[!access] = '1;
 				cif.ccsnoopaddr[!access] = cif.daddr[access];
 				cif.ccinv[!access] = cif.ccwrite[access];
 			end
 			MEM0: begin
-				bmif.memaddr = cif.daddr[access];
-				bmif.memREN = '1;
-				cif.dwait[access] = (bmif.memstate != ACCESS);
-				cif.dload[access] = bmif.memload;
+				cif.ramaddr = cif.daddr[access];
+				cif.ramREN = '1;
+				cif.dwait[access] = (cif.ramstate != ACCESS);
+				cif.dload[access] = cif.ramload;
 				cif.ccwait = 0;
 				cif.ccinv = 0;
 			end	
 			MEM1: begin
-				bmif.memaddr = cif.daddr[access];
-				bmif.memREN = '1;
-				cif.dwait[access] = (bmif.memstate != ACCESS);
-				cif.dload[access] = bmif.memload;
+				cif.ramaddr = cif.daddr[access];
+				cif.ramREN = '1;
+				cif.dwait[access] = (cif.ramstate != ACCESS);
+				cif.dload[access] = cif.ramload;
 				cif.ccwait = 0;
 				cif.ccinv = 0;
 			end
