@@ -1,15 +1,3 @@
-<<<<<<< HEAD
-/*
-  Eric Villasenor
-  evillase@gmail.com
-  Jimmy Jin
-  mingze.jin01@gmail.com
-
-  register file fpga wrapper
-*/
-
-=======
->>>>>>> 0624e4c5ef24367940d84f137d70b432db0fd3d6
 // interface
 `include "alu_if.vh"
 
