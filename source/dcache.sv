@@ -213,7 +213,7 @@ always_comb begin
     next_prev_dhit = dpif.dhit;
     next_prev_addr = dpif.dmemaddr;
 
-    if (dpif.dhit && !miss_flag && !(prev_dhit && dpif.dmemaddr == prev_addr)) next_hit_count = hit_count + 1;
+    if (dpif.dhit && !miss_flag) next_hit_count = hit_count + 1;
 
     casez(state)
       IDLE: begin
