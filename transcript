@@ -18,25 +18,42 @@
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
 # ** Note: Multiple occurrences of ini variable ToggleWidthLimit are found, only first occurence will be considered.
-# vsim -coverage -suppress 12110 -do "view objects; do scripts/bus_controller.do; run -all;" -onfinish stop "+define+USE_VIVADO" -L unisim -wlf bus_controller_tb.wlf work.bus_controller_tb glbl 
-# Start time: 12:45:30 on Oct 30,2026
-# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# vsim -coverage -suppress 12110 -do "view objects; do scripts/dcache.do; run -all;" -onfinish stop "+define+USE_VIVADO" -L unisim -wlf dcache_tb.wlf work.dcache_tb glbl 
+# Start time: 12:54:17 on Nov 14,2026
+# ** Note: (vsim-8009) Loading existing optimized design _opt1
 # Loading sv_std.std
 # Loading work.cpu_types_pkg(fast)
-# Loading work.bus_controller_tb(fast)
+# Loading work.dcache_tb(fast)
+# Loading work.datapath_cache_if(fast__1)
 # Loading work.caches_if(fast__1)
-# Loading work.caches_if(fast__2)
-# Loading work.cache_control_if(fast__1)
-# Loading work.cpu_ram_if(fast__1)
-# Loading work.bus_controller(fast)
-# Loading work.ram(fast)
+# Loading work.dcache(fast)
 # Loading work.glbl(fast)
 # view objects
 # .main_pane.objects.interior.cs.body.tree
-#  do scripts/bus_controller.do
+#  do scripts/dcache.do
+# ** UI-Msg (Warning): (vish-4014) No objects found matching '/dcache_tb/DUT/next_lru'.
+# Executing ONERROR command at macro ./scripts/dcache.do line 21
+# ** UI-Msg (Warning): (vish-4014) No objects found matching '/dcache_tb/DUT/next_dirty'.
+# Executing ONERROR command at macro ./scripts/dcache.do line 22
+# ** UI-Msg (Warning): (vish-4014) No objects found matching '/dcache_tb/DUT/next_word'.
+# Executing ONERROR command at macro ./scripts/dcache.do line 23
 #  run -all
-# Break in Module bus_controller_tb at testbench/bus_controller_tb.sv line 184
+# Break in Module dcache_tb at testbench/dcache_tb.sv line 329
 # 
-# Break key hit
-# End time: 12:49:42 on Oct 30,2026, Elapsed time: 0:04:12
-# Errors: 0, Warnings: 0
+add wave -position insertpoint  \
+sim:/dcache_tb/ccif/ccwait \
+sim:/dcache_tb/ccif/ccinv \
+sim:/dcache_tb/ccif/ccwrite \
+sim:/dcache_tb/ccif/cctrans \
+sim:/dcache_tb/ccif/ccsnoopaddr
+restart
+# ** Note: (vsim-8009) Loading existing optimized design _opt1
+# Loading sv_std.std
+# Loading work.cpu_types_pkg(fast)
+# Loading work.dcache_tb(fast)
+# Loading work.datapath_cache_if(fast__1)
+# Loading work.caches_if(fast__1)
+# Loading work.dcache(fast)
+# Loading work.glbl(fast)
+run -all
+# Break in Module dcache_tb at testbench/dcache_tb.sv line 329

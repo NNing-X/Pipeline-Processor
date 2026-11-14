@@ -14,9 +14,9 @@ module bus_controller(
 		casez(state)
 			IDLE: if (cif.dWEN || cif.dREN || cif.iREN) next_state = ARBITRATE;
 			ARBITRATE: begin
-				if (cif.dWEN[access]) next_state = WB0;
-				else if (cif.dREN[access]) next_state = SNOOP;
-				else if (cif.iREN[access]) next_state = IFETCH;
+				if (cif.dWEN[next_access]) next_state = WB0;
+				else if (cif.dREN[next_access]) next_state = SNOOP;
+				else if (cif.iREN[next_access]) next_state = IFETCH;
 			end
 			WB0: if (cif.ramstate == ACCESS) next_state = WB1;
 			WB1: if (cif.ramstate == ACCESS) next_state = IDLE;
@@ -37,18 +37,28 @@ module bus_controller(
 	logic arbiter, next_arbiter;
 	always_comb begin
 		next_arbiter = arbiter;
+		next_access = access;
+		cif.ramaddr = '0;
+		cif.ramWEN = '0;
+		cif.ramREN = '0;
+		cif.ramstore = '0;
+		cif.dwait = cif.dREN | cif.dWEN;
+		cif.dload = '0;
+		cif.ccwait = '0;
+		cif.ccinv = '0;
+		cif.ccsnoopaddr = '0;
+		cif.iwait = cif.iREN;
+		cif.iload = '0;
 		casez(state)
 			IDLE: begin
 				cif.ramaddr = '0;
 				cif.ramWEN = '0;
 				cif.ramREN = '0;
 				cif.ramstore = '0;
-				cif.dwait = '0;
 				cif.dload = '0;
 				cif.ccwait = '0;
 				cif.ccinv = '0;
 				cif.ccsnoopaddr = '0;
-				cif.iwait = '0;
 				cif.iload = '0;
 			end
 			ARBITRATE: begin

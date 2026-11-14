@@ -21,6 +21,9 @@ module dcache_tb;
     dpif.halt = 0;
     ccif.dwait = 1;
     ccif.dload = '0;
+    ccif.ccwait = 0;
+    ccif.ccinv = 0;
+    ccif.ccsnoopaddr = '0;
 
     nRST = 0;
     @(negedge CLK);
@@ -84,7 +87,7 @@ module dcache_tb;
     dpif.dmemWEN = 1'b1;
     @(negedge CLK);
     assert(ccif.dREN==1) else $display("read0 didn't set dREN");
-    assert(ccif.daddr==32'h0000_2000) else $display("read0 wrong address");
+    assert(ccif.daddr==32'hAAA0_2000) else $display("read0 wrong address");
     ccif.dwait = 1'b1;
     @(negedge CLK);
     ccif.dload = 32'hCCCC_CCCC;
@@ -105,8 +108,18 @@ module dcache_tb;
     dpif.dmemstore = 32'hDDDD_DDDD;
     dpif.dmemWEN = 1'b1;
     @(negedge CLK);
+    assert(ccif.dWEN==1) else $display("wb0 didn't set dWEN");
+    assert(ccif.daddr==32'h0000_2000) else $display("wb0 wrong address");
+    assert(ccif.dstore==32'hDDDD_DDDD) else $display("wb0 wrong data");
+    ccif.dwait = 1'b0;//wb0->wb1
+    @(negedge CLK);
+    assert(ccif.dWEN==1) else $display("wb1 didn't set dWEN");
+    assert(ccif.daddr==32'h0000_2004) else $display("wb1 wrong address");
+    assert(ccif.dstore==32'hDDDD_DDDD) else $display("wb1 wrong data");
+    ccif.dwait = 1'b0;//wb1->read0
+    @(negedge CLK);
     assert(ccif.dREN==1) else $display("read0 didn't set dREN");
-    assert(ccif.daddr==32'h0000_2000) else $display("read0 wrong address");
+    assert(ccif.daddr==32'hBBB0_2000) else $display("read0 wrong address");
     ccif.dwait = 1'b1;
     @(negedge CLK);
     ccif.dload = 32'hCCCC_CCCC;
@@ -121,7 +134,138 @@ module dcache_tb;
     assert(dpif.dhit == 1) else $display("store didn't hit after read1");
     assert(dpif.dmemstore==32'hDDDD_DDDD)else $display("wrong write data");
     @(negedge CLK);
-    dpif.dmemREN=0;
+    dpif.dmemREN = 0;
+
+    //snoop
+    //reset so snoop tests start from an empty cache
+    nRST = 0;
+    dpif.dmemREN = 0;
+    dpif.dmemWEN = 0;
+    ccif.dwait = 1;
+    ccif.ccwait = 0;
+    ccif.ccinv = 0;
+    @(negedge CLK);
+    nRST = 1;
+    @(negedge CLK);
+
+    //store miss to get a dirty line
+    dpif.dmemaddr = 32'h0000_3000;
+    dpif.dmemstore = 32'h3333_3333;
+    dpif.dmemWEN = 1'b1;
+    @(negedge CLK);
+    assert(ccif.dREN==1) else $display("snoop setup read0 didn't set dREN");
+    assert(ccif.ccwrite==1) else $display("snoop setup read0 didn't set ccwrite");
+    ccif.dload = 32'h1111_1111;
+    ccif.dwait = 1'b0;//read0->read1
+    @(negedge CLK);
+    ccif.dload = 32'h2222_2222;//read1->idle
+    @(negedge CLK);
+    ccif.dwait = 1;
+    assert(dpif.dhit == 1) else $display("snoop setup store didn't hit after read1");
+    @(negedge CLK);
+    dpif.dmemWEN = 0;
+    @(negedge CLK);
+
+    //snoop read on dirty line
+    ccif.ccsnoopaddr = 32'h0000_3004;
+    ccif.ccinv = 0;
+    ccif.ccwait = 1;
+    dpif.dmemaddr = 32'h0000_3000;
+    dpif.dmemREN = 1;
+    #1;
+    assert(ccif.ccwrite == 1) else $display("snoop dirty didn't set ccwrite");
+    assert(ccif.dstore == 32'h2222_2222) else $display("snoop dirty wrong dstore");
+    assert(dpif.dhit == 0) else $display("dhit during snoop");
+    @(negedge CLK);
+    assert(ccif.dstore == 32'h2222_2222) else $display("snoop saved word1 wrong");
+    ccif.ccsnoopaddr = 32'h0000_3000;
+    #1;
+    assert(ccif.dstore == 32'h3333_3333) else $display("snoop saved word0 wrong");
+    ccif.ccwait = 0;
+    dpif.dmemREN = 0;
+    @(negedge CLK);
+
+    //line should still be valid after read snoop
+    dpif.dmemaddr = 32'h0000_3000;
+    dpif.dmemREN = 1;
+    #1;
+    assert(dpif.dhit == 1) else $display("line invalidated by read snoop");
+    assert(dpif.dmemload == 32'h3333_3333) else $display("wrong load data after read snoop");
+    dpif.dmemREN = 0;
+    @(negedge CLK);
+
+    //line should be clean after read snoop
+    ccif.ccsnoopaddr = 32'h0000_3000;
+    ccif.ccinv = 0;
+    ccif.ccwait = 1;
+    #1;
+    assert(ccif.ccwrite == 0) else $display("line still dirty after read snoop");
+    @(negedge CLK);
+    ccif.ccwait = 0;
+    @(negedge CLK);
+
+    //snoop invalidate on clean line
+    ccif.ccsnoopaddr = 32'h0000_3000;
+    ccif.ccinv = 1;
+    ccif.ccwait = 1;
+    #1;
+    assert(ccif.ccwrite == 0) else $display("snoop invalidate clean set ccwrite");
+    @(negedge CLK);
+    ccif.ccwait = 0;
+    ccif.ccinv = 0;
+    @(negedge CLK);
+    dpif.dmemaddr = 32'h0000_3000;
+    dpif.dmemREN = 1;
+    #1;
+    assert(dpif.dhit == 0) else $display("clean line not invalidated");
+    dpif.dmemREN = 0;
+    @(negedge CLK);
+
+    //store miss to get a dirty line again
+    dpif.dmemaddr = 32'h0000_3000;
+    dpif.dmemstore = 32'h3333_3333;
+    dpif.dmemWEN = 1'b1;
+    @(negedge CLK);
+    assert(ccif.dREN==1) else $display("snoop setup read0 didn't set dREN");
+    ccif.dload = 32'h1111_1111;
+    ccif.dwait = 1'b0;//read0->read1
+    @(negedge CLK);
+    ccif.dload = 32'h2222_2222;//read1->idle
+    @(negedge CLK);
+    ccif.dwait = 1;
+    assert(dpif.dhit == 1) else $display("snoop setup store didn't hit after read1");
+    @(negedge CLK);
+    dpif.dmemWEN = 0;
+    @(negedge CLK);
+
+    //snoop invalidate on dirty line
+    ccif.ccsnoopaddr = 32'h0000_3000;
+    ccif.ccinv = 1;
+    ccif.ccwait = 1;
+    #1;
+    assert(ccif.ccwrite == 1) else $display("snoop invalidate dirty didn't set ccwrite");
+    assert(ccif.dstore == 32'h3333_3333) else $display("snoop invalidate dirty wrong dstore");
+    @(negedge CLK);
+    ccif.ccwait = 0;
+    ccif.ccinv = 0;
+    @(negedge CLK);
+    dpif.dmemaddr = 32'h0000_3000;
+    dpif.dmemREN = 1;
+    #1;
+    assert(dpif.dhit == 0) else $display("dirty line not invalidated");
+    dpif.dmemREN = 0;
+    @(negedge CLK);
+
+    //snoop miss
+    ccif.ccsnoopaddr = 32'h0000_5000;
+    ccif.ccinv = 0;
+    ccif.ccwait = 1;
+    #1;
+    assert(ccif.ccwrite == 0) else $display("snoop miss set ccwrite");
+    @(negedge CLK);
+    ccif.ccwait = 0;
+    @(negedge CLK);
+    
 
     //flush
     @(negedge CLK);
