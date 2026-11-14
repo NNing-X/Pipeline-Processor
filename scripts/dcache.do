@@ -18,13 +18,15 @@ add wave -noupdate /dcache_tb/DUT/miss_flag
 add wave -noupdate /dcache_tb/DUT/hit_count
 add wave -noupdate /dcache_tb/DUT/prev_dhit
 add wave -noupdate /dcache_tb/DUT/prev_addr
-add wave -noupdate /dcache_tb/DUT/next_lru
-add wave -noupdate /dcache_tb/DUT/next_dirty
-add wave -noupdate /dcache_tb/DUT/next_word
 add wave -noupdate /dcache_tb/DUT/flush_index
 add wave -noupdate /dcache_tb/DUT/flush_way
+add wave -noupdate /dcache_tb/ccif/ccwait
+add wave -noupdate /dcache_tb/ccif/ccinv
+add wave -noupdate /dcache_tb/ccif/ccwrite
+add wave -noupdate /dcache_tb/ccif/cctrans
+add wave -noupdate /dcache_tb/ccif/ccsnoopaddr
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {355000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {425697 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 150
 configure wave -valuecolwidth 100
