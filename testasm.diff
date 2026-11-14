@@ -1,7 +1,20 @@
-processing file asmFiles/fib.asm (1 of 3)
-processing file asmFiles/fib.asm (1 of 3)
-processing file asmFiles/mult.asm (2 of 3)
-processing file asmFiles/search.asm (3 of 3)
-processing file asmFiles/fib.asm (1 of 3)
-processing file asmFiles/mult.asm (2 of 3)
-processing file asmFiles/search.asm (3 of 3)
+processing file asmFiles/quicksort.asm (1 of 1)
+processing file asmFiles/quicksort.asm (1 of 1)
+--- memsim.hex	2026-11-14 13:14:51.468201272 -0500
++++ memcpu.hex	2026-11-14 13:14:51.464201317 -0500
+@@ -125,5 +125,5 @@
+ :0401FA0000000400FD
+ :0401FB0000000104FB
+ :0401FF0000000018E4
+-:040C4000000000ECC4
++:040C4000000000D8D8
+ :00000001FF
+processing file asmFiles/quicksort.asm (1 of 1)
+--- memsim.hex	2026-11-14 13:17:09.273635784 -0500
++++ memcpu.hex	2026-11-14 13:17:09.267635854 -0500
+@@ -125,4 +125,5 @@
+ :0401FA0000000400FD
+ :0401FB0000000104FB
+ :0401FF0000000018E4
++:040C4000000000D8D8
+ :00000001FF

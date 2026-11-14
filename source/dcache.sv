@@ -200,7 +200,6 @@ always_ff @(posedge CLK or negedge nRST) begin
 
     prev_dhit <= dpif.dhit;
     prev_addr <= dpif.dmemaddr;
-    if (dpif.dhit && !miss_flag && !(prev_dhit && dpif.dmemaddr == prev_addr)) hit_count <= hit_count + 1;
     casez(state)
       IDLE: begin
         if ((dpif.dmemREN || dpif.dmemWEN) && hit) begin
